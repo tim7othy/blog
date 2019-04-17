@@ -94,23 +94,25 @@
 
 
 
-  <meta name="description" content="页面中嵌入画布canvas是HTML5中的一个页面元素，表示一个画布，我们可以通过JavaScript在画布上绘制图形、图像来展示我们想要呈现的内容。在HTML文件中加入以下代码，就可以在我们的页面中嵌入一个宽500px，高500px的canvas画布： 1&amp;lt;canvas id=&quot;canvas&quot; width=&quot;500&quot; height=&quot;500&quot;&amp;gt;&amp;lt;/canvas&amp;gt; 需要注意">
-<meta name="keywords" content="前端 canvas">
+  <meta name="description" content="页面中嵌入画布&amp;lt;canvas&amp;gt;是HTML5中的一个页面元素，表示一个画布，我们可以通过JavaScript在画布上绘制图形、图像来展示我们想要呈现的内容。在HTML文件中加入以下代码，就可以在我们的页面中嵌入一个宽500px，高500px的canvas画布： 1&amp;lt;canvas id=&quot;canvas&quot; width=&quot;500&quot; height=&quot;500&quot;&amp;gt;&amp;lt;/canvas&amp;">
+<meta name="keywords" content="前端,canvas">
 <meta property="og:type" content="article">
 <meta property="og:title" content="HTML5 Canvas应用实践（一）：基础使用指南">
 <meta property="og:url" content="https://timothy-tianmu.github.io/blog/2019/04/17/HTML5-Canvas应用实践（一）：基础使用指南/index.html">
 <meta property="og:site_name" content="马猴实验室">
-<meta property="og:description" content="页面中嵌入画布canvas是HTML5中的一个页面元素，表示一个画布，我们可以通过JavaScript在画布上绘制图形、图像来展示我们想要呈现的内容。在HTML文件中加入以下代码，就可以在我们的页面中嵌入一个宽500px，高500px的canvas画布： 1&amp;lt;canvas id=&quot;canvas&quot; width=&quot;500&quot; height=&quot;500&quot;&amp;gt;&amp;lt;/canvas&amp;gt; 需要注意">
+<meta property="og:description" content="页面中嵌入画布&amp;lt;canvas&amp;gt;是HTML5中的一个页面元素，表示一个画布，我们可以通过JavaScript在画布上绘制图形、图像来展示我们想要呈现的内容。在HTML文件中加入以下代码，就可以在我们的页面中嵌入一个宽500px，高500px的canvas画布： 1&amp;lt;canvas id=&quot;canvas&quot; width=&quot;500&quot; height=&quot;500&quot;&amp;gt;&amp;lt;/canvas&amp;">
 <meta property="og:locale" content="zh-CN">
 <meta property="og:image" content="http://static.zybuluo.com/timothy-tianmu/48xr78cbmrsem56xl1q83m2u/image_1d8kflfrcs50std8ai1n8e7ss9.png">
 <meta property="og:image" content="http://static.zybuluo.com/timothy-tianmu/ls1oeyd5ikyx9m4ij3iyn7fl/image_1d8khirh940qa4o1dutme1a45m.png">
 <meta property="og:image" content="http://static.zybuluo.com/timothy-tianmu/oxpjqmn86pzx8t2tqmcvr1g9/square.png">
 <meta property="og:image" content="http://static.zybuluo.com/timothy-tianmu/mh4n762lasyz5hp9mln7gdlm/gradient.png">
 <meta property="og:image" content="http://static.zybuluo.com/timothy-tianmu/3j0nc54t995fm9eik7yhgbyw/image_1d8ko8fuedk4mllftr2i3n415.png">
-<meta property="og:updated_time" content="2019-04-17T08:19:21.166Z">
+<meta property="og:image" content="http://static.zybuluo.com/timothy-tianmu/3br3jjbt7taj3ja7bkt7tlnl/239947-106.jpg">
+<meta property="og:image" content="http://static.zybuluo.com/timothy-tianmu/ytclvnadyb2hq6ik019bmvu9/cat.png">
+<meta property="og:updated_time" content="2019-04-17T09:09:04.955Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="HTML5 Canvas应用实践（一）：基础使用指南">
-<meta name="twitter:description" content="页面中嵌入画布canvas是HTML5中的一个页面元素，表示一个画布，我们可以通过JavaScript在画布上绘制图形、图像来展示我们想要呈现的内容。在HTML文件中加入以下代码，就可以在我们的页面中嵌入一个宽500px，高500px的canvas画布： 1&amp;lt;canvas id=&quot;canvas&quot; width=&quot;500&quot; height=&quot;500&quot;&amp;gt;&amp;lt;/canvas&amp;gt; 需要注意">
+<meta name="twitter:description" content="页面中嵌入画布&amp;lt;canvas&amp;gt;是HTML5中的一个页面元素，表示一个画布，我们可以通过JavaScript在画布上绘制图形、图像来展示我们想要呈现的内容。在HTML文件中加入以下代码，就可以在我们的页面中嵌入一个宽500px，高500px的canvas画布： 1&amp;lt;canvas id=&quot;canvas&quot; width=&quot;500&quot; height=&quot;500&quot;&amp;gt;&amp;lt;/canvas&amp;">
 <meta name="twitter:image" content="http://static.zybuluo.com/timothy-tianmu/48xr78cbmrsem56xl1q83m2u/image_1d8kflfrcs50std8ai1n8e7ss9.png">
 
 
@@ -392,7 +394,7 @@
                 
               
 
-              <time title="创建时间：2019-04-17 16:18:00 / 修改时间：16:19:21" itemprop="dateCreated datePublished" datetime="2019-04-17T16:18:00+08:00">2019-04-17</time>
+              <time title="创建时间：2019-04-17 16:18:00 / 修改时间：17:09:04" itemprop="dateCreated datePublished" datetime="2019-04-17T16:18:00+08:00">2019-04-17</time>
             
 
             
@@ -431,16 +433,16 @@
       
 
       
-        <h2 id="页面中嵌入画布"><a href="#页面中嵌入画布" class="headerlink" title="页面中嵌入画布"></a>页面中嵌入画布</h2><p>canvas是HTML5中的一个页面元素，表示一个画布，我们可以通过JavaScript在画布上绘制图形、图像来展示我们想要呈现的内容。在HTML文件中加入以下代码，就可以在我们的页面中嵌入一个宽500px，高500px的canvas画布：</p>
+        <h2 id="页面中嵌入画布"><a href="#页面中嵌入画布" class="headerlink" title="页面中嵌入画布"></a>页面中嵌入画布</h2><p><code>&lt;canvas&gt;</code>是HTML5中的一个页面元素，表示一个画布，我们可以通过JavaScript在画布上绘制图形、图像来展示我们想要呈现的内容。在HTML文件中加入以下代码，就可以在我们的页面中嵌入一个宽500px，高500px的canvas画布：</p>
 <figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">canvas</span> <span class="attr">id</span>=<span class="string">"canvas"</span> <span class="attr">width</span>=<span class="string">"500"</span> <span class="attr">height</span>=<span class="string">"500"</span>&gt;</span><span class="tag">&lt;/<span class="name">canvas</span>&gt;</span></span><br></pre></td></tr></table></figure>
-<p>需要注意的是，<canvas> 标签只有两个属性—— width和height。这些都是可选的，并且同样利用 DOM properties 来设置。当没有设置宽度和高度的时候，canvas会初始化宽度为300像素和高度为150像素。该元素可以使用CSS来定义大小，但在绘制时图像会伸缩以适应它的框架尺寸：<strong>如果CSS的尺寸与初始画布的比例不一致，它会出现扭曲。因此我们最好在HTML文件中嵌入<canvas>元素时就在标签上指定画布的大小</canvas></strong>。</canvas></p>
-<h2 id="获取渲染上下文"><a href="#获取渲染上下文" class="headerlink" title="获取渲染上下文"></a>获取渲染上下文</h2><p><canvas>起初是空白的。为了展示，首先我们要通过JavaScript获取渲染上下文，然后通过绘图的API在它的上面绘制。<canvas>的<code>getContext()</code>的方法是用来获得渲染上下文和它的绘画功能。<code>getContext()</code>只有一个参数，上下文的格式。对于2D图像而言，我们需要2d的渲染环境，使用如下代码即可：</canvas></canvas></p>
+<p>需要注意的是，<code>&lt;canvas&gt;</code> 标签只有两个属性—— width和height。这些都是可选的，并且同样利用 DOM properties 来设置。当没有设置宽度和高度的时候，canvas会初始化宽度为300像素和高度为150像素。该元素可以使用CSS来定义大小，但在绘制时图像会伸缩以适应它的框架尺寸：<strong>如果CSS的尺寸与初始画布的比例不一致，它会出现扭曲。因此我们最好在HTML文件中嵌入<code>&lt;canvas&gt;</code>元素时就在标签上指定画布的大小</strong>。</p>
+<h2 id="获取渲染上下文"><a href="#获取渲染上下文" class="headerlink" title="获取渲染上下文"></a>获取渲染上下文</h2><p>canvas起初是空白的。为了展示，首先我们要通过JavaScript获取渲染上下文，然后通过绘图的API在它的上面绘制。canvas的<code>getContext()</code>的方法是用来获得渲染上下文和它的绘画功能。<code>getContext()</code>只有一个参数，上下文的格式。对于2D图像而言，我们需要2d的渲染环境，使用如下代码即可：</p>
 <figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> canvas = <span class="built_in">document</span>.getElementById(<span class="string">'canvas'</span>);</span><br><span class="line"><span class="keyword">var</span> ctx = canvas.getContext(<span class="string">'2d'</span>);</span><br></pre></td></tr></table></figure>
 <h2 id="开始绘制矩形"><a href="#开始绘制矩形" class="headerlink" title="开始绘制矩形"></a>开始绘制矩形</h2><p>上文中我们通过<code>canvas.getContext(&#39;2d&#39;)</code>方法获得了渲染上下文对象，并把它命名为ctx变量。之后我们就可以通过这个ctx变量控制画布的渲染。</p>
-<p>我们从在画布上绘制一个<code>100*100</code>像素大小的矩形开始我们的绘图之旅，但是我们的画布有<code>500*500</code>像素的大小，我们如何通知画布我们想要将矩形绘制在画布的哪个地方呢？这需要我们先来了解一下<canvas>画布元素的坐标系统：</canvas></p>
+<p>我们从在画布上绘制一个<code>100*100</code>像素大小的矩形开始我们的绘图之旅，但是我们的画布有<code>500*500</code>像素的大小，我们如何通知画布我们想要将矩形绘制在画布的哪个地方呢？这需要我们先来了解一下<code>&lt;canvas&gt;</code>画布元素的坐标系统：</p>
 <p><img src="http://static.zybuluo.com/timothy-tianmu/48xr78cbmrsem56xl1q83m2u/image_1d8kflfrcs50std8ai1n8e7ss9.png" alt="image_1d8kflfrcs50std8ai1n8e7ss9.png-7.5kB"></p>
 <p><strong>canvas画布是一个网格系统，通常来说网格中的一个单元相当于canvas元素中的一像素，不过我们可以通过缩放画布改变网格大小，这个之后我们会说。网格系统以左上角为坐标原点，原点往右为x轴正方向，原点往下为y轴正方向</strong>，可以发现这与我们数学中的坐标系有一点不同，即y轴方向是相反的，在我们绘制图形，指定图形坐标点的时候需要注意这一点。</p>
-<p>知道怎样指定我们绘制的元素在画布上的位置，接下来我们就只需要通过<canvas>提供的API来绘制元素了。canvas提供了三种方法绘制矩形：</canvas></p>
+<p>知道怎样指定我们绘制的元素在画布上的位置，接下来我们就只需要通过canvas提供的API来绘制元素了。canvas提供了三种方法绘制矩形：</p>
 <figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 绘制一个填充的矩形</span></span><br><span class="line">ctx.fillRect(x, y, width, height)</span><br><span class="line"></span><br><span class="line"><span class="comment">//绘制一个矩形的边框</span></span><br><span class="line">ctx.strokeRect(x, y, width, height)</span><br><span class="line"></span><br><span class="line"><span class="comment">// 清除指定矩形区域，让清除部分完全透明</span></span><br><span class="line">ctx.clearRect(x, y, width, height)</span><br></pre></td></tr></table></figure>
 <p>上面提供的方法之中每一个都包含了相同的参数。x与y指定了在canvas画布上所绘制的矩形的左上角（相对于原点）的坐标，width和height设置矩形的尺寸，下面是实例代码：</p>
 <figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">draw</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">    <span class="keyword">var</span> canvas = <span class="built_in">document</span>.getElementById(<span class="string">'canvas'</span>);</span><br><span class="line">    <span class="keyword">var</span> ctx = canvas.getContext(<span class="string">'2d'</span>);</span><br><span class="line">    ctx.fillRect(<span class="number">25</span>, <span class="number">25</span>, <span class="number">100</span>, <span class="number">100</span>);</span><br><span class="line">    ctx.clearRect(<span class="number">45</span>, <span class="number">45</span>, <span class="number">60</span>, <span class="number">60</span>);</span><br><span class="line">    ctx.strokeRect(<span class="number">50</span>, <span class="number">50</span>, <span class="number">50</span>, <span class="number">50</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
@@ -481,6 +483,10 @@
 <figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> img = <span class="keyword">new</span> Image();   <span class="comment">// 创建img元素</span></span><br><span class="line">img.onload = <span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">  <span class="comment">// 执行drawImage语句</span></span><br><span class="line">&#125;</span><br><span class="line">img.src = <span class="string">'myImage.png'</span>; <span class="comment">// 设置图片源地址，设置之后图片开始异步加载</span></span><br></pre></td></tr></table></figure>
 <p>在canvas中绘制图片的API：</p>
 <figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// image 是 image 或者 canvas 对象，x 和 y 是图片在 canvas 里的起始坐标</span></span><br><span class="line">drawImage(image, x, y)</span><br><span class="line"></span><br><span class="line"><span class="comment">// 这个API用于控制图片在画布上的显示位置和大小</span></span><br><span class="line"><span class="comment">// width 和 height，这两个参数用来控制当向canvas画入时应该缩放的大小</span></span><br><span class="line">drawImage(image, x, y, width, height)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment">// 这个API用于截取图片中一部分显示到页面上</span></span><br><span class="line"><span class="comment">// 除了image参数外，前4个参数是定义图像源的切片位置和大小</span></span><br><span class="line"><span class="comment">// 后4个参数则是定义图片切片在画布上的显示位置和大小</span></span><br><span class="line">drawImage(image, sx, sy, sWidth, sHeight, dx, dy, dWidth, dHeight)</span><br></pre></td></tr></table></figure>
+<p>如下面的一张图片，我们希望在canvas画布上只显示有图案的一部分，就可以使用第三个drawImage的绘制图片API来将图片绘制到canvas上：</p>
+<p><img src="http://static.zybuluo.com/timothy-tianmu/3br3jjbt7taj3ja7bkt7tlnl/239947-106.jpg" alt="239947-106.jpg-40.6kB"></p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">drawImage</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">    <span class="keyword">var</span> canvas = <span class="built_in">document</span>.getElementById(<span class="string">"canvas"</span>)</span><br><span class="line">    <span class="keyword">var</span> ctx = canvas.getContext(<span class="string">"2d"</span>)</span><br><span class="line">    <span class="keyword">var</span> img = <span class="keyword">new</span> Image()</span><br><span class="line">    img.onload = <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">      ctx.drawImage(img, <span class="number">700</span>, <span class="number">160</span>, <span class="number">500</span>, <span class="number">500</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">500</span>, <span class="number">500</span>)</span><br><span class="line">    &#125;</span><br><span class="line">    img.src = <span class="string">"http://static.zybuluo.com/timothy-tianmu/3br3jjbt7taj3ja7bkt7tlnl/239947-106.jpg"</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><img src="http://static.zybuluo.com/timothy-tianmu/ytclvnadyb2hq6ik019bmvu9/cat.png" alt="cat.png-94.2kB"></p>
 
       
     </div>
@@ -504,7 +510,7 @@
       
         <div class="post-tags">
           
-            <a href="/blog/tags/前端-canvas/" rel="tag"># 前端 canvas</a>
+            <a href="/blog/tags/前端-canvas/" rel="tag"># 前端,canvas</a>
           
         </div>
       
@@ -513,6 +519,22 @@
       
       
 
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/blog/2019/04/17/HTML5-Canvas应用实践（二）：搭建渲染框架/" rel="prev" title="HTML5 Canvas应用实践（二）：搭建渲染框架">
+                HTML5 Canvas应用实践（二）：搭建渲染框架 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
       
 
       
@@ -578,7 +600,7 @@
                 
                   <a href="/blog/archives/">
                 
-                    <span class="site-state-item-count">1</span>
+                    <span class="site-state-item-count">2</span>
                     <span class="site-state-item-name">日志</span>
                   </a>
                 </div>
@@ -599,7 +621,9 @@
                     
                       
                     
-                    <span class="site-state-item-count">1</span>
+                      
+                    
+                    <span class="site-state-item-count">2</span>
                     <span class="site-state-item-name">标签</span>
                   </a>
                 </div>

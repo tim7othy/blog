@@ -1,0 +1,866 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-CN">
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/blog/lib/font-awesome/css/font-awesome.min.css?v=4.6.2">
+
+<link rel="stylesheet" href="/blog/css/main.css?v=7.1.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/blog/images/apple-touch-icon.png?v=7.1.0">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/blog/images/favicon-32x32.png?v=7.1.0">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/blog/images/favicon-16x16.png?v=7.1.0">
+
+
+
+
+
+
+
+
+<script id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/blog/',
+    scheme: 'Gemini',
+    version: '7.1.0',
+    sidebar: {"position":"left","display":"post","offset":12,"onmobile":false,"dimmer":false},
+    back2top: true,
+    back2top_sidebar: false,
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":true,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  <meta name="description" content="在上一篇文章中，我们已经熟悉了Canvas的基础操作，可以使用Canvas完成简单的绘图任务了，但是当我们使用Canvas完成了几个Demo之后，会发现每个Demo都有很多重复代码，例如我们要在HTML文件中添加一个&amp;lt;canvas&amp;gt;标签，还要在JS脚本中，通过如下代码来获取Canvas渲染上下文： 12var canvas = document.getElementById(&quot;canv">
+<meta name="keywords" content="前端, canvas">
+<meta property="og:type" content="article">
+<meta property="og:title" content="HTML5 Canvas应用实践（二）：搭建渲染框架">
+<meta property="og:url" content="https://timothy-tianmu.github.io/blog/2019/04/17/HTML5-Canvas应用实践（二）：搭建渲染框架/index.html">
+<meta property="og:site_name" content="马猴实验室">
+<meta property="og:description" content="在上一篇文章中，我们已经熟悉了Canvas的基础操作，可以使用Canvas完成简单的绘图任务了，但是当我们使用Canvas完成了几个Demo之后，会发现每个Demo都有很多重复代码，例如我们要在HTML文件中添加一个&amp;lt;canvas&amp;gt;标签，还要在JS脚本中，通过如下代码来获取Canvas渲染上下文： 12var canvas = document.getElementById(&quot;canv">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="http://static.zybuluo.com/timothy-tianmu/nj6hvolsgcmqtqvpbygydquc/move.gif">
+<meta property="og:image" content="http://static.zybuluo.com/timothy-tianmu/tbthkbrja8q7p9mzligfcpzk/move1.gif">
+<meta property="og:updated_time" content="2019-04-17T15:23:28.135Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="HTML5 Canvas应用实践（二）：搭建渲染框架">
+<meta name="twitter:description" content="在上一篇文章中，我们已经熟悉了Canvas的基础操作，可以使用Canvas完成简单的绘图任务了，但是当我们使用Canvas完成了几个Demo之后，会发现每个Demo都有很多重复代码，例如我们要在HTML文件中添加一个&amp;lt;canvas&amp;gt;标签，还要在JS脚本中，通过如下代码来获取Canvas渲染上下文： 12var canvas = document.getElementById(&quot;canv">
+<meta name="twitter:image" content="http://static.zybuluo.com/timothy-tianmu/nj6hvolsgcmqtqvpbygydquc/move.gif">
+
+
+
+
+
+  
+  
+  <link rel="canonical" href="https://timothy-tianmu.github.io/blog/2019/04/17/HTML5-Canvas应用实践（二）：搭建渲染框架/">
+
+
+
+<script id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>HTML5 Canvas应用实践（二）：搭建渲染框架 | 马猴实验室</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .motion-element,
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-title { opacity: initial; }
+
+  .use-motion .logo,
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/blog/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">马猴实验室</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+    
+      
+        <p class="site-subtitle">相信的心就是你的魔法</p>
+      
+    
+    
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="切换导航栏">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+        
+          
+          <li class="menu-item menu-item-home">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/blog/~" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i> <br>首页</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-about">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/blog/about/" rel="section"><i class="menu-item-icon fa fa-fw fa-user"></i> <br>关于</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-tags">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/blog/tags/" rel="section"><i class="menu-item-icon fa fa-fw fa-tags"></i> <br>标签</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-categories">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/blog/categories/" rel="section"><i class="menu-item-icon fa fa-fw fa-th"></i> <br>分类</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-archives">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/blog/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br>归档</a>
+
+  </li>
+
+      
+      
+    </ul>
+  
+
+  
+
+  
+</nav>
+
+
+
+  
+
+
+
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+            
+
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://timothy-tianmu.github.io/blog/blog/2019/04/17/HTML5-Canvas应用实践（二）：搭建渲染框架/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="木木">
+      <meta itemprop="description" content="记录技术，学习笔记，生活感悟">
+      <meta itemprop="image" content="/blog/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="马猴实验室">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">HTML5 Canvas应用实践（二）：搭建渲染框架
+
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-04-17 23:22:17 / 修改时间：23:23:28" itemprop="dateCreated datePublished" datetime="2019-04-17T23:22:17+08:00">2019-04-17</time>
+            
+
+            
+              
+
+              
+            
+          </span>
+
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>在上一篇文章中，我们已经熟悉了Canvas的基础操作，可以使用Canvas完成简单的绘图任务了，但是当我们使用Canvas完成了几个Demo之后，会发现每个Demo都有很多重复代码，例如我们要在HTML文件中添加一个<code>&lt;canvas&gt;</code>标签，还要在JS脚本中，通过如下代码来获取Canvas渲染上下文：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> canvas = <span class="built_in">document</span>.getElementById(<span class="string">"canvas"</span>)</span><br><span class="line"><span class="keyword">var</span> ctx = canvas.getContext(<span class="string">"2d"</span>)</span><br></pre></td></tr></table></figure>
+<p>为了避免每次都要输入同样的代码，我们可以将这些代码封装成一个基础的渲染框架，这样我们就可以在每个Demo中复用我们封装的这一套代码。</p>
+<h2 id="编写基本框架"><a href="#编写基本框架" class="headerlink" title="编写基本框架"></a>编写基本框架</h2><p>我们将使用ES6中的Class语法来组织代码，将canvas相关的属性组织到一个Canvas类中。我们希望使用canvas时只需要实例化这个类，并且传入canvas的相关属性配置即可。</p>
+<p>首先我们创建一个基础的Canvas类，在构造函数中接受一个配置参数对象，并且将相关配置信息作为类的属性维护在类内部，便于之后创建canvas元素以及使用渲染上下文绘图时使用。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Canvas</span> </span>&#123;</span><br><span class="line">  <span class="keyword">constructor</span>(options) &#123;</span><br><span class="line">    <span class="keyword">this</span>.id = options.id || <span class="string">"canvas"</span></span><br><span class="line">    <span class="keyword">this</span>.rootId = options.root || <span class="string">"root"</span></span><br><span class="line">    <span class="keyword">this</span>.W = options.width || <span class="number">800</span></span><br><span class="line">    <span class="keyword">this</span>.H = options.height || <span class="number">600</span></span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>在构造函数中获取canvas的属性信息之后，我们就需要创建canvas元素，并且插入到页面Dom结构中，然后通过canvas元素获取渲染上下文，最后完成我们的绘制任务。我们通过一个mount函数完成canvas的创建和挂载，通过一个draw函数进行绘制。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Canvas</span> </span>&#123;</span><br><span class="line">  <span class="keyword">constructor</span>(options) &#123;</span><br><span class="line">    <span class="keyword">this</span>.initCanvas(options)</span><br><span class="line">    <span class="keyword">this</span>.mount(options)</span><br><span class="line">    <span class="keyword">this</span>.draw()</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  initCanvas(options) &#123;</span><br><span class="line">    <span class="keyword">this</span>.id = options.id || <span class="string">"canvas"</span></span><br><span class="line">    <span class="keyword">this</span>.rootId = options.root || <span class="string">"root"</span></span><br><span class="line">    <span class="keyword">this</span>.W = options.width || <span class="number">800</span></span><br><span class="line">    <span class="keyword">this</span>.H = options.height || <span class="number">600</span></span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  mount(options) &#123;</span><br><span class="line">    <span class="comment">// 将canvas挂载到指定根元素下</span></span><br><span class="line">    <span class="keyword">var</span> &#123;W, H, id, rootId&#125; = <span class="keyword">this</span></span><br><span class="line">    <span class="keyword">var</span> elem = <span class="built_in">document</span>.getElementById(rootId)</span><br><span class="line">    <span class="keyword">var</span> canvas = <span class="string">`</span></span><br><span class="line"><span class="string">      &lt;canvas id='<span class="subst">$&#123;id&#125;</span>' width='<span class="subst">$&#123;W&#125;</span>' height='<span class="subst">$&#123;H&#125;</span>'&gt;&lt;/canvas&gt;</span></span><br><span class="line"><span class="string">    `</span></span><br><span class="line">    elem.insertAdjacentHTML(<span class="string">"beforeend"</span>, canvas)</span><br><span class="line">    <span class="comment">// 将canvas元素和canvas上下文环境保存到Canvas实例中</span></span><br><span class="line">    <span class="keyword">this</span>.canvas = <span class="built_in">document</span>.getElementById(id)</span><br><span class="line">    <span class="keyword">this</span>.ctx = <span class="keyword">this</span>.canvas.getContext(<span class="string">"2d"</span>)</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  draw() &#123;</span><br><span class="line">    <span class="keyword">this</span>.ctx.clearRect(<span class="number">0</span>, <span class="number">0</span>, <span class="keyword">this</span>.W, <span class="keyword">this</span>.H)</span><br><span class="line">    <span class="keyword">this</span>.ctx.fillStyle = <span class="string">"#369"</span></span><br><span class="line">    <span class="keyword">this</span>.ctx.fillRect(<span class="number">50</span>, <span class="number">50</span>, <span class="number">100</span>, <span class="number">100</span>)</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>以上我们就完成了一个简单的Canvas类，实例化这个类时，会自动创建一个canvas元素，根据传入的options选项对象设置canvas元素大小，然后挂载到id为rootId的元素下，最后执行draw函数中的代码，在canvas上绘制图像。</p>
+<p>这个类已经很好地满足了我们目前的需求，即封装每个Demo都需要的重复代码，简化开发。<strong>但是要想复用这个类，我们需要把这个Canvas类作为“抽象基类”，去掉draw()函数中的代码，留给继承该类的具体子类去实现。然后在我们的Demo中，我们只需要创建一个继承自Canvas类的DemoCanvas类，并且重写draw函数中的代码为我们自己的绘制代码即可，draw函数在我们实例化DemoCanvas类时会在父类构造函数中被执行</strong>：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">DemoCanvas</span> <span class="keyword">extends</span> <span class="title">Canvas</span> </span>&#123;</span><br><span class="line">  <span class="keyword">constructor</span>(options) &#123;</span><br><span class="line">    <span class="keyword">super</span>(options)</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  draw() &#123;</span><br><span class="line">    <span class="keyword">this</span>.ctx.clearRect(<span class="number">0</span>, <span class="number">0</span>, <span class="keyword">this</span>.W, <span class="keyword">this</span>.H)</span><br><span class="line">    <span class="keyword">this</span>.ctx.fillStyle = <span class="string">"#369"</span></span><br><span class="line">    <span class="keyword">this</span>.ctx.fillRect(<span class="number">50</span>, <span class="number">50</span>, <span class="number">100</span>, <span class="number">100</span>)</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 创建Canvas元素，绘制图像</span></span><br><span class="line"><span class="keyword">new</span> DemoCanvas(&#123;</span><br><span class="line">  id: <span class="string">"demo"</span>,</span><br><span class="line">  rootId: <span class="string">"root"</span>,</span><br><span class="line">  width: <span class="number">500</span>,</span><br><span class="line">  height: <span class="number">500</span>,</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+<p>可以看到，我们已经可以非常简单地完成一个绘图Demo，几乎不需要编写什么重复代码了。做到这里我们的需求其实已经完成了，但是随着我们编写的绘图程序越来越复杂，我们就会发现这一套框架还是太简陋了。一个很典型的需求就是我们可能需要在canvas中绘制动画，还会与键盘鼠标进行交互等等，这些我们都应该在框架中考虑到。</p>
+<h2 id="让框架支持动画"><a href="#让框架支持动画" class="headerlink" title="让框架支持动画"></a>让框架支持动画</h2><p>下面我们就来改进Canvas类，让它可以简化在canvas中进行动画绘制的代码。</p>
+<p><strong>动画实际也是由一帧一帧的静态图像组成，只不过这些静态图像按照一定顺序，以很快的速度切换，人眼看起来就好像图像上的物体在运动。因此如果我们要在canvas中绘制动画，我们要做的就是每隔一小段时间在canvas中绘制一帧图像</strong>。</p>
+<p>每秒60帧图像已经可以让人眼感觉动画在非常流畅地运行，因此具体来说，我们只需要每隔1/60秒绘制一帧图像就可以了。</p>
+<p>具体来说，之前我们实现的Canvas类中是直接调用draw函数，我们把它可以改成每隔1/60秒draw一次，即如下代码：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Canvas</span> </span>&#123;</span><br><span class="line">  <span class="keyword">constructor</span>(options) &#123;</span><br><span class="line">    <span class="keyword">this</span>.initCanvas(options)</span><br><span class="line">    <span class="keyword">this</span>.mount(options)</span><br><span class="line">    <span class="keyword">this</span>.loop()</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  initCanvas(options) &#123;</span><br><span class="line">    <span class="comment">// initCanvas代码……</span></span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  mount(options) &#123;</span><br><span class="line">    <span class="comment">// mount代码……</span></span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  draw() &#123;&#125;</span><br><span class="line"></span><br><span class="line">  loop() &#123;</span><br><span class="line">    <span class="keyword">var</span> c = <span class="keyword">this</span></span><br><span class="line">    setTimeout(<span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">      c.draw() </span><br><span class="line">      c.loop()</span><br><span class="line">    &#125;, <span class="number">1</span> / <span class="number">60</span> * <span class="number">1000</span>)</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><strong>但是使用setTimeout绘制有一些弊端，因为设置时间间隔并不准确，有时候任务太多会造成绘制任务长时间未被执行，导致页面卡顿，现在我们有一个更好的API可以使用，就是requestAnimationFrame，这个函数会在浏览器每一轮事件循环时执行，可以保证动画流畅运行</strong>。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Canvas</span> </span>&#123;</span><br><span class="line">  <span class="keyword">constructor</span>(options) &#123;</span><br><span class="line">    <span class="keyword">this</span>.initCanvas(options)</span><br><span class="line">    <span class="keyword">this</span>.mount(options)</span><br><span class="line">    <span class="keyword">this</span>.loop()</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  initCanvas(options) &#123;</span><br><span class="line">    <span class="comment">// initCanvas代码……</span></span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  mount(options) &#123;</span><br><span class="line">    <span class="comment">// mount代码……</span></span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  draw() &#123;&#125;</span><br><span class="line"></span><br><span class="line">  loop() &#123;</span><br><span class="line">    <span class="keyword">var</span> c = <span class="keyword">this</span></span><br><span class="line">    requestAnimaitonFrame(<span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">      c.draw() </span><br><span class="line">      c.loop()</span><br><span class="line">    &#125;)</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>要在我们的Demo中使用这个类，同样是需要创建一个DemoCanvas类继承这个类，然后在draw函数中编写动画每一帧的绘制函数，具体的动画状态、参数可以存储在DemoCanvas类的属性中。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">DemoCanvas</span> <span class="keyword">extends</span> <span class="title">Canvas</span> </span>&#123;</span><br><span class="line">  <span class="keyword">constructor</span>(options) &#123;</span><br><span class="line">    <span class="keyword">super</span>(options)</span><br><span class="line">    <span class="keyword">this</span>.x = <span class="number">0</span></span><br><span class="line">    <span class="keyword">this</span>.y = <span class="number">0</span></span><br><span class="line">    <span class="keyword">this</span>.speedX = <span class="number">5</span></span><br><span class="line">    <span class="keyword">this</span>.speedY = <span class="number">10</span></span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  draw() &#123;</span><br><span class="line">    <span class="keyword">this</span>.ctx.clearRect(<span class="number">0</span>, <span class="number">0</span>, <span class="keyword">this</span>.W, <span class="keyword">this</span>.H)</span><br><span class="line">    <span class="keyword">this</span>.ctx.fillStyle = <span class="string">"#369"</span></span><br><span class="line">    <span class="keyword">this</span>.ctx.fillRect(<span class="keyword">this</span>.x, <span class="keyword">this</span>.y, <span class="number">100</span>, <span class="number">100</span>)</span><br><span class="line">    <span class="keyword">this</span>.x += <span class="keyword">this</span>.speedX</span><br><span class="line">    <span class="keyword">this</span>.y += <span class="keyword">this</span>.speedY</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>上面的代码中，draw函数实际上有一些复杂，<strong>我们应该保持一个函数只做一件事，draw函数应该只负责绘制页面，但是我们还让它负责更新画面中元素的位置状态信息。我们可以将这些代码拆分出来，放到一个update函数中，这个函数负责更新每一帧的状态，即画面中每个元素的位置、大小等等信息</strong>。同时我们还需要父类支持这个更改，即将update函数加入到每一帧循环中，最后我们添加一个start方法启动循环，用户需要调用这个函数来启动canvas动画。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Canvas</span> </span>&#123;</span><br><span class="line">  <span class="keyword">constructor</span>(options) &#123;</span><br><span class="line">    <span class="keyword">this</span>.initCanvas(options)</span><br><span class="line">    <span class="keyword">this</span>.mount(options)</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  initCanvas(options) &#123;</span><br><span class="line">    <span class="comment">// initCanvas代码……</span></span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  mount(options) &#123;</span><br><span class="line">    <span class="comment">// mount代码……</span></span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  draw() &#123;&#125;</span><br><span class="line">  update() &#123;&#125;</span><br><span class="line"></span><br><span class="line">  loop() &#123;</span><br><span class="line">    <span class="keyword">var</span> c = <span class="keyword">this</span></span><br><span class="line">    requestAnimationFrame(<span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">      c.draw() </span><br><span class="line">      c.update()</span><br><span class="line">      c.loop()</span><br><span class="line">    &#125;)</span><br><span class="line">  &#125;</span><br><span class="line">  </span><br><span class="line">  start() &#123;</span><br><span class="line">    <span class="keyword">this</span>.loop()</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">DemoCanvas</span> <span class="keyword">extends</span> <span class="title">Canvas</span> </span>&#123;</span><br><span class="line">  <span class="keyword">constructor</span>(options) &#123;</span><br><span class="line">    <span class="keyword">super</span>(options)</span><br><span class="line">    <span class="keyword">this</span>.x = <span class="number">0</span></span><br><span class="line">    <span class="keyword">this</span>.y = <span class="number">0</span></span><br><span class="line">    <span class="keyword">this</span>.speedX = <span class="number">5</span></span><br><span class="line">    <span class="keyword">this</span>.speedY = <span class="number">10</span></span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  update() &#123;</span><br><span class="line">    <span class="keyword">this</span>.x += <span class="keyword">this</span>.speedX</span><br><span class="line">    <span class="keyword">this</span>.y += <span class="keyword">this</span>.speedY</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  draw() &#123;</span><br><span class="line">    <span class="keyword">this</span>.ctx.clearRect(<span class="number">0</span>, <span class="number">0</span>, <span class="keyword">this</span>.W, <span class="keyword">this</span>.H)</span><br><span class="line">    <span class="keyword">this</span>.ctx.fillStyle = <span class="string">"#369"</span></span><br><span class="line">    <span class="keyword">this</span>.ctx.fillRect(<span class="keyword">this</span>.x, <span class="keyword">this</span>.y, <span class="number">100</span>, <span class="number">100</span>)</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>示例效果展示：<br><img src="http://static.zybuluo.com/timothy-tianmu/nj6hvolsgcmqtqvpbygydquc/move.gif" alt="move.gif-24.1kB"></p>
+<h2 id="让框架支持交互"><a href="#让框架支持交互" class="headerlink" title="让框架支持交互"></a>让框架支持交互</h2><p>现在我们开发的框架已经能够支持动画了，不过这些动画还不能够与键盘和鼠标进行交互。下面我们在Demo类中添加一些键盘事件，让页面元素可以根据键盘输入进行运动。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">DemoCanvas</span> <span class="keyword">extends</span> <span class="title">Canvas</span> </span>&#123;</span><br><span class="line">  <span class="keyword">constructor</span>(options) &#123;</span><br><span class="line">    <span class="keyword">super</span>(options)</span><br><span class="line">    <span class="keyword">this</span>.setupMovement()</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  setupMovement() &#123;</span><br><span class="line">    <span class="keyword">this</span>.x = <span class="number">0</span></span><br><span class="line">    <span class="keyword">this</span>.y = <span class="number">0</span></span><br><span class="line">    <span class="keyword">this</span>.speedX = <span class="number">5</span></span><br><span class="line">    <span class="keyword">this</span>.speedY = <span class="number">10</span></span><br><span class="line">    <span class="built_in">window</span>.addEventListener(<span class="string">"keydown"</span>,(ev) =&gt; &#123;</span><br><span class="line">      <span class="keyword">var</span> k = ev.key</span><br><span class="line">      <span class="keyword">if</span> (k === <span class="string">"a"</span>) &#123;</span><br><span class="line">        <span class="keyword">this</span>.x -= <span class="keyword">this</span>.speedX</span><br><span class="line">      &#125; <span class="keyword">else</span> <span class="keyword">if</span> (k === <span class="string">"d"</span>) &#123;</span><br><span class="line">        <span class="keyword">this</span>.x += <span class="keyword">this</span>.speedX</span><br><span class="line">      &#125; <span class="keyword">else</span> <span class="keyword">if</span> (k === <span class="string">"w"</span>) &#123;</span><br><span class="line">        <span class="keyword">this</span>.y -= <span class="keyword">this</span>.speedY</span><br><span class="line">      &#125; <span class="keyword">else</span> <span class="keyword">if</span> (k === <span class="string">"s"</span>) &#123;</span><br><span class="line">        <span class="keyword">this</span>.y += <span class="keyword">this</span>.speedY</span><br><span class="line">      &#125;</span><br><span class="line">      <span class="built_in">console</span>.log(<span class="keyword">this</span>.x)</span><br><span class="line">    &#125;)</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  update() &#123;&#125;</span><br><span class="line"></span><br><span class="line">  draw() &#123;</span><br><span class="line">    <span class="comment">// draw代码……</span></span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>在上面的类中，我们通过addEventListener函数为keydown事件添加了一个处理函数，在处理函数中我们根据用户按下的不同键进行不同地处理。<strong>虽然完成了需求，但是这样做很不好，我们需要考虑当代码变得复杂之后的情况。我们之后可能会处理更多的用户输入，每次都需要修改这个函数，添加一条if……else……语句，同时我们还可能会处理更多的键盘事件，这个函数就会无限膨胀，导致代码难以维护，很难保证我们会不出错</strong>。</p>
+<h2 id="实现键盘事件管理"><a href="#实现键盘事件管理" class="headerlink" title="实现键盘事件管理"></a>实现键盘事件管理</h2><p>我们需要将这段处理用户输入事件的代码抽象一下，在父类中自己实现键盘事件的注册、管理和分发的函数，让代码耦合度变低。</p>
+<p>首先我们在Canvas类中使用一个ES6中的数据结构，<code>Set</code>来保存当前循环帧下，用户按下的所有按键的值。为了达到这个目的，<strong>我们需要监听用户的keydown事件，每次用户按下按键时，将这个按键的值存储到Canvas类中维护的Set中。因为Set内的元素不会重复，因此如果Set中已经有了这个按键，就不会再添加一次。同时我们还要监听keyup事件，每次用户松开按键，我们要将这个按键的值从Set中移除</strong>。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 收集用户按键</span></span><br><span class="line">setupKeyActions() &#123;</span><br><span class="line">  <span class="keyword">this</span>.keydowns = <span class="keyword">new</span> <span class="built_in">Set</span>()</span><br><span class="line">  <span class="built_in">window</span>.addEventListener(<span class="string">"keydown"</span>,(ev) =&gt; &#123;</span><br><span class="line">    <span class="keyword">var</span> &#123;key&#125; = ev</span><br><span class="line">    <span class="keyword">this</span>.keydowns.add(key)</span><br><span class="line">  &#125;)</span><br><span class="line">  <span class="built_in">window</span>.addEventListener(<span class="string">"keyup"</span>,(ev) =&gt; &#123;</span><br><span class="line">    <span class="keyword">var</span> &#123;key&#125; = ev</span><br><span class="line">    <span class="keyword">this</span>.keydowns.delete(key)</span><br><span class="line">  &#125;)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>现在我们在每一轮帧循环中，都可以从this.keydowns中获取到当前下用户按了哪些按键，这样我们就可以在每一帧中，根据不同按键执行不同的画面更新。现在的问题就是如何为不同的按键设置不同的事件处理函数。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 收集用户按键</span></span><br><span class="line">setupKeyActions() &#123;</span><br><span class="line">  <span class="keyword">this</span>.keydowns = <span class="keyword">new</span> <span class="built_in">Set</span>()</span><br><span class="line">  <span class="keyword">this</span>.keyActions = <span class="keyword">new</span> <span class="built_in">Map</span>()</span><br><span class="line">  <span class="built_in">window</span>.addEventListener(<span class="string">"keydown"</span>,(ev) =&gt; &#123;</span><br><span class="line">    <span class="keyword">var</span> &#123;key&#125; = ev</span><br><span class="line">    <span class="keyword">this</span>.keydowns.add(key)</span><br><span class="line">  &#125;)</span><br><span class="line">  <span class="built_in">window</span>.addEventListener(<span class="string">"keyup"</span>,(ev) =&gt; &#123;</span><br><span class="line">    <span class="keyword">var</span> &#123;key&#125; = ev</span><br><span class="line">    <span class="keyword">this</span>.keydowns.delete(key)</span><br><span class="line">  &#125;)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 注册一个键盘事件</span></span><br><span class="line">registerKeyAction(ev, callback) &#123;</span><br><span class="line">  <span class="keyword">this</span>.registerAction(<span class="keyword">this</span>.keyActions, ev, callback)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 辅助函数，在actionMap添加一条ev事件映射记录</span></span><br><span class="line">registerAction(actionMap, ev, callback) &#123;</span><br><span class="line">  <span class="keyword">if</span> (actionMap.has(ev)) &#123;</span><br><span class="line">    <span class="keyword">var</span> acts = actionMap.get(ev)</span><br><span class="line">    <span class="keyword">if</span> (<span class="built_in">Array</span>.isArray(acts)) &#123;</span><br><span class="line">      acts.push(callback)</span><br><span class="line">    &#125; <span class="keyword">else</span> <span class="keyword">if</span> (isFunc(acts)) &#123;</span><br><span class="line">      actionMap.set(ev, [acts, callback])</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">      <span class="keyword">throw</span> <span class="keyword">new</span> <span class="built_in">Error</span>(<span class="string">"Action type error"</span>)</span><br><span class="line">    &#125;</span><br><span class="line">  &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">    actionMap.set(ev, callback)</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>上面的代码中，<strong>我们使用一个Map数据结构存储按键值和相应的事件处理函数队列的映射(key =&gt; event handler queue)，Canvas类的使用者可以通过Canvas提供的registerKeyAction这个函数注册不同按键的处理函数</strong>。</p>
+<p>在下面的代码中，我们在Canvas的update函数中执行performKeyActions函数，即每一轮循环我们都会遍历一次keydowns Set，获取所有用户按下的按键，然后在keyActions Map中获取所有按下按键对应的处理函数，然后依次执行。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Canvas</span> </span>&#123;</span><br><span class="line">  <span class="keyword">constructor</span>(options) &#123;</span><br><span class="line">    <span class="keyword">this</span>.initCanvas(options)</span><br><span class="line">    <span class="keyword">this</span>.mount(options)</span><br><span class="line">    <span class="keyword">this</span>.initEvents()</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// 类中其他代码已省略……</span></span><br><span class="line"></span><br><span class="line">  <span class="comment">// 设置canvas相关事件</span></span><br><span class="line">  initEvents() &#123;</span><br><span class="line">    <span class="keyword">this</span>.setupKeyActions()</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// 收集用户按键</span></span><br><span class="line">  setupKeyActions() &#123;</span><br><span class="line">    <span class="comment">// setupKeyActions代码……</span></span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// 执行按下按键对应的处理函数</span></span><br><span class="line">  performKeyActions() &#123;</span><br><span class="line">    <span class="keyword">var</span> eventWrapper = &#123;&#125;</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">var</span> k <span class="keyword">of</span> <span class="keyword">this</span>.keydowns.keys()) &#123;</span><br><span class="line">        <span class="keyword">if</span> (k === <span class="string">"Control"</span>) &#123;</span><br><span class="line">          eventWrapper.ctrlDown = <span class="literal">true</span></span><br><span class="line">        &#125; <span class="keyword">else</span> <span class="keyword">if</span> (k === <span class="string">"Alt"</span>) &#123;</span><br><span class="line">          eventWrapper.altDown = <span class="literal">true</span></span><br><span class="line">        &#125; <span class="keyword">else</span> <span class="keyword">if</span> (k === <span class="string">"Shift"</span>) &#123;</span><br><span class="line">          eventWrapper.shiftDown = <span class="literal">true</span></span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">var</span> acts = <span class="keyword">this</span>.keyActions.get(k)</span><br><span class="line">        <span class="keyword">this</span>.callActions(acts, eventWrapper)</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">  </span><br><span class="line">  <span class="comment">// 辅助函数，执行acts变量指向的函数或指向的数组中的所有函数</span></span><br><span class="line">  callActions(acts, ev) &#123;</span><br><span class="line">    <span class="keyword">if</span> (acts) &#123;</span><br><span class="line">      <span class="keyword">if</span> (<span class="built_in">Array</span>.isArray(acts)) &#123;</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">var</span> f <span class="keyword">of</span> acts) &#123;</span><br><span class="line">          f(ev)</span><br><span class="line">        &#125;</span><br><span class="line">      &#125; <span class="keyword">else</span> <span class="keyword">if</span> (isFunc(acts)) &#123;</span><br><span class="line">        acts(ev)</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  update() &#123;</span><br><span class="line">    <span class="keyword">this</span>.performKeyActions()</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>我们现在就可以使用这个Canvas类方便地注册不同按键的事件了，我们使用这个按键注册系统完成一个使用wasd控制矩形运动的Demo，代码如下：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">AnimationCanvas</span> <span class="keyword">extends</span> <span class="title">Canvas</span> </span>&#123;</span><br><span class="line">  <span class="keyword">constructor</span>(options) &#123;</span><br><span class="line">    <span class="keyword">super</span>(options)</span><br><span class="line">    <span class="keyword">this</span>.setup()</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  setup() &#123;</span><br><span class="line">    <span class="keyword">this</span>.x = <span class="number">0</span></span><br><span class="line">    <span class="keyword">this</span>.y = <span class="number">0</span></span><br><span class="line">    <span class="keyword">this</span>.speedX = <span class="number">3</span></span><br><span class="line">    <span class="keyword">this</span>.speedY = <span class="number">5</span></span><br><span class="line">    <span class="keyword">this</span>.registerKeyAction(<span class="string">"a"</span>, (ev) =&gt; &#123;</span><br><span class="line">      <span class="keyword">this</span>.x -= <span class="keyword">this</span>.speedX</span><br><span class="line">    &#125;)</span><br><span class="line">    <span class="keyword">this</span>.registerKeyAction(<span class="string">"d"</span>, (ev) =&gt; &#123;</span><br><span class="line">      <span class="keyword">this</span>.x += <span class="keyword">this</span>.speedX</span><br><span class="line">    &#125;)</span><br><span class="line">    <span class="keyword">this</span>.registerKeyAction(<span class="string">"w"</span>, (ev) =&gt; &#123;</span><br><span class="line">      <span class="keyword">this</span>.y -= <span class="keyword">this</span>.speedY</span><br><span class="line">    &#125;)</span><br><span class="line">    <span class="keyword">this</span>.registerKeyAction(<span class="string">"s"</span>, (ev) =&gt; &#123;</span><br><span class="line">      <span class="keyword">this</span>.y += <span class="keyword">this</span>.speedY</span><br><span class="line">    &#125;)</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  draw() &#123;</span><br><span class="line">    <span class="keyword">this</span>.ctx.clearRect(<span class="number">0</span>, <span class="number">0</span>, <span class="keyword">this</span>.W, <span class="keyword">this</span>.H)</span><br><span class="line">    <span class="keyword">this</span>.ctx.fillStyle = <span class="string">"#369"</span></span><br><span class="line">    <span class="keyword">this</span>.ctx.fillRect(<span class="keyword">this</span>.x, <span class="keyword">this</span>.y, <span class="number">100</span>, <span class="number">100</span>)</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>示例展示：</p>
+<p><img src="http://static.zybuluo.com/timothy-tianmu/tbthkbrja8q7p9mzligfcpzk/move1.gif" alt="move1.gif-124.6kB"></p>
+
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/blog/tags/前端-canvas/" rel="tag"># 前端, canvas</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/blog/2019/04/17/HTML5-Canvas应用实践（一）：基础使用指南/" rel="next" title="HTML5 Canvas应用实践（一）：基础使用指南">
+                <i class="fa fa-chevron-left"></i> HTML5 Canvas应用实践（一）：基础使用指南
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+  </div>
+
+
+          </div>
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">木木</p>
+              <div class="site-description motion-element" itemprop="description">记录技术，学习笔记，生活感悟</div>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/blog/archives/">
+                
+                    <span class="site-state-item-count">2</span>
+                    <span class="site-state-item-name">日志</span>
+                  </a>
+                </div>
+              
+
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  
+                    
+                      <a href="/blog/tags/">
+                    
+                  
+                    
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">2</span>
+                    <span class="site-state-item-name">标签</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+
+          
+
+          
+            <div class="links-of-author motion-element">
+              
+                <span class="links-of-author-item">
+                  
+                  
+                    
+                  
+                  
+                    
+                  
+                  <a href="https://github.com/timothy-tianmu" title="GitHub &rarr; https://github.com/timothy-tianmu" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+                </span>
+              
+                <span class="links-of-author-item">
+                  
+                  
+                    
+                  
+                  
+                    
+                  
+                  <a href="mailto:tianmu_19970924@163.com" title="E-Mail &rarr; mailto:tianmu_19970924@163.com" rel="noopener" target="_blank"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                </span>
+              
+            </div>
+          
+
+          
+
+          
+          
+
+          
+            
+          
+          
+
+        </div>
+      </div>
+
+      
+      <!--noindex-->
+        <div class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+            
+            
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#编写基本框架"><span class="nav-number">1.</span> <span class="nav-text">编写基本框架</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#让框架支持动画"><span class="nav-number">2.</span> <span class="nav-text">让框架支持动画</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#让框架支持交互"><span class="nav-number">3.</span> <span class="nav-text">让框架支持交互</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#实现键盘事件管理"><span class="nav-number">4.</span> <span class="nav-text">实现键盘事件管理</span></a></li></ol></div>
+            
+
+          </div>
+        </div>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+  
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-snowflake-o"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">木木</span>
+
+  
+
+  
+</div>
+
+
+
+
+
+
+
+
+
+        
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+    
+
+    
+  </div>
+
+  
+
+<script>
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+    
+    
+      
+    
+  
+  <script color="0,0,255" opacity="0.5" zindex="-1" count="99" src="//cdn.jsdelivr.net/gh/theme-next/theme-next-canvas-nest@1/canvas-nest.min.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script src="/blog/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script src="/blog/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script src="/blog/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+
+  
+
+
+  <script src="/blog/js/utils.js?v=7.1.0"></script>
+
+  <script src="/blog/js/motion.js?v=7.1.0"></script>
+
+
+
+  
+  
+
+
+  <script src="/blog/js/affix.js?v=7.1.0"></script>
+
+  <script src="/blog/js/schemes/pisces.js?v=7.1.0"></script>
+
+
+
+
+  
+  <script src="/blog/js/scrollspy.js?v=7.1.0"></script>
+<script src="/blog/js/post-details.js?v=7.1.0"></script>
+
+
+
+  
+
+
+  <script src="/blog/js/next-boot.js?v=7.1.0"></script>
+
+
+  
+
+  
+
+  
+
+  
+
+
+  
+
+
+  
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
