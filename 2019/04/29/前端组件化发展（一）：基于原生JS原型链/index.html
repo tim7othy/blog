@@ -1,0 +1,875 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-CN">
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/blog/lib/font-awesome/css/font-awesome.min.css?v=4.6.2">
+
+<link rel="stylesheet" href="/blog/css/main.css?v=7.1.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/blog/images/apple-touch-icon.png?v=7.1.0">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/blog/images/favicon-32x32.png?v=7.1.0">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/blog/images/favicon-16x16.png?v=7.1.0">
+
+
+
+
+
+
+
+
+<script id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/blog/',
+    scheme: 'Gemini',
+    version: '7.1.0',
+    sidebar: {"position":"left","display":"post","offset":12,"onmobile":false,"dimmer":false},
+    back2top: true,
+    back2top_sidebar: false,
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":true,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  <meta name="description" content="组件化发展概述前端在开发一个复杂的页面时，往往需要首先拆分页面，将页面分割为不同的模块，然后分配给不同的人进行独立开发，最后将这些模块组合在一起形成完整的页面。 在开发过程中，会发现页面上有一些部分的结构、样式和功能非常相似，我们就会将这些部分单独抽象出来作为一个独立的组件，之后在需要的地方可以直接引入组件，传入一些参数进行组件的配置，而不用重复编写同样的逻辑。 抽象页面的一部分为组件实际上是一种">
+<meta name="keywords" content="前端,组件化,JavaScript">
+<meta property="og:type" content="article">
+<meta property="og:title" content="前端组件化发展（一）：基于原生JS原型链">
+<meta property="og:url" content="https://timothy-tianmu.github.io/blog/2019/04/29/前端组件化发展（一）：基于原生JS原型链/index.html">
+<meta property="og:site_name" content="马猴实验室">
+<meta property="og:description" content="组件化发展概述前端在开发一个复杂的页面时，往往需要首先拆分页面，将页面分割为不同的模块，然后分配给不同的人进行独立开发，最后将这些模块组合在一起形成完整的页面。 在开发过程中，会发现页面上有一些部分的结构、样式和功能非常相似，我们就会将这些部分单独抽象出来作为一个独立的组件，之后在需要的地方可以直接引入组件，传入一些参数进行组件的配置，而不用重复编写同样的逻辑。 抽象页面的一部分为组件实际上是一种">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="http://static.zybuluo.com/timothy-tianmu/idcueu8cgztaqlrp8awon6t9/popup.png">
+<meta property="og:updated_time" content="2019-04-29T14:41:42.268Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="前端组件化发展（一）：基于原生JS原型链">
+<meta name="twitter:description" content="组件化发展概述前端在开发一个复杂的页面时，往往需要首先拆分页面，将页面分割为不同的模块，然后分配给不同的人进行独立开发，最后将这些模块组合在一起形成完整的页面。 在开发过程中，会发现页面上有一些部分的结构、样式和功能非常相似，我们就会将这些部分单独抽象出来作为一个独立的组件，之后在需要的地方可以直接引入组件，传入一些参数进行组件的配置，而不用重复编写同样的逻辑。 抽象页面的一部分为组件实际上是一种">
+<meta name="twitter:image" content="http://static.zybuluo.com/timothy-tianmu/idcueu8cgztaqlrp8awon6t9/popup.png">
+
+
+
+
+
+  
+  
+  <link rel="canonical" href="https://timothy-tianmu.github.io/blog/2019/04/29/前端组件化发展（一）：基于原生JS原型链/">
+
+
+
+<script id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>前端组件化发展（一）：基于原生JS原型链 | 马猴实验室</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .motion-element,
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-title { opacity: initial; }
+
+  .use-motion .logo,
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/blog/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">马猴实验室</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+    
+      
+        <p class="site-subtitle">相信的心就是你的魔法</p>
+      
+    
+    
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="切换导航栏">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+        
+          
+          <li class="menu-item menu-item-home">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/blog/~" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i> <br>首页</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-about">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/blog/about/" rel="section"><i class="menu-item-icon fa fa-fw fa-user"></i> <br>关于</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-tags">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/blog/tags/" rel="section"><i class="menu-item-icon fa fa-fw fa-tags"></i> <br>标签</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-categories">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/blog/categories/" rel="section"><i class="menu-item-icon fa fa-fw fa-th"></i> <br>分类</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-archives">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/blog/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br>归档</a>
+
+  </li>
+
+      
+      
+    </ul>
+  
+
+  
+
+  
+</nav>
+
+
+
+  
+
+
+
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+            
+
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://timothy-tianmu.github.io/blog/blog/2019/04/29/前端组件化发展（一）：基于原生JS原型链/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="木木">
+      <meta itemprop="description" content="记录技术，学习笔记，生活感悟">
+      <meta itemprop="image" content="/blog/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="马猴实验室">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">前端组件化发展（一）：基于原生JS原型链
+
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-04-29 22:39:18 / 修改时间：22:41:42" itemprop="dateCreated datePublished" datetime="2019-04-29T22:39:18+08:00">2019-04-29</time>
+            
+
+            
+              
+
+              
+            
+          </span>
+
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="组件化发展概述"><a href="#组件化发展概述" class="headerlink" title="组件化发展概述"></a>组件化发展概述</h2><p>前端在开发一个复杂的页面时，往往需要首先拆分页面，将页面分割为不同的模块，然后分配给不同的人进行独立开发，最后将这些模块组合在一起形成完整的页面。</p>
+<p>在开发过程中，会发现页面上有一些部分的结构、样式和功能非常相似，我们就会将这些部分单独抽象出来作为一个独立的组件，之后在需要的地方可以直接引入组件，传入一些参数进行组件的配置，而不用重复编写同样的逻辑。</p>
+<p>抽象页面的一部分为组件实际上是一种面向对象的思想，一个组件就是包含了页面结构、样式以及行为逻辑的对象，它会管理自己内部的状态，以及拥有一些方法改变自己内部的状态。</p>
+<p>在其他面向对象语言中我们可以很容易实现一个组件类，在类中封装组件的状态，以及组件的行为，并通过实例化生成多个组件对象。</p>
+<p>但是在ES6之前，JS的语法比较薄弱，不支持类的语法，因此大家在编写组件时，使用的是原型链模拟出的一个面向对象的系统，使用起来比较麻烦。而且在行为层面，JS需要通过操作Dom改变页面状态，但是JS操作Dom的原生API非常难用。</p>
+<p>因此为了弥补这些缺陷出现了一些框架，jQuery就是一个很出名的框架，它封装了一些原生的API以及编程的模式，抹平了一些浏览器兼容性的问题，让我们能够以更加简洁的方式操作Dom，编写组件。</p>
+<p>随着前端的发展，JS语言也在逐渐进步和完善，ES6提供了更多的语法特性方便我们编写程序，比如提供了Class语法，让我们可以像其他面向对象语言一样编写类。虽然底层的实现还是原型链，但是我们可以以更加正统的面向对象的方式编写代码了。同时原生的Dom API也发生了改变，提供了很多便捷的方法来选择和操作Dom。因此在这个阶段，对于一些简单的组件，我们可以不再将jQuery引入我们的项目中，而是自己封装一些jQuery中好用的功能，然后直接使用原生JS进行开发，减少项目的依赖以及文件大小。</p>
+<p>使用原生JS开发有着复杂交互的应用是很困难的，因为可能会有复杂的交互逻辑，以及大量的Dom操作，随着项目规模的增长，会变得越来越难以维护。</p>
+<p>因此Vue和React这类现代的前端框架就出现了，它们是基于MVVM架构的，主张使用数据驱动的方式编写程序。我们在编写组件时，只需要考虑组件内部的数据状态，组件的方法也只需要更改组件的状态，框架将自动高效地完成页面Dom的更新。</p>
+<p>这个系列的文章我们将从最原始的编写组件的方法开始介绍，逐渐优化组件的编写方式，这个过程中我们会体会到随着前端发展，不同的组件化方式的改进以及优势。</p>
+<h2 id="基于原型链的弹窗组件"><a href="#基于原型链的弹窗组件" class="headerlink" title="基于原型链的弹窗组件"></a>基于原型链的弹窗组件</h2><p>上文中我们提到，一个组件的内部包含了结构、样式和行为，也就是说我们在编写一个组件时要编写这个组件的HTML结构、CSS样式以及JavaScript逻辑代码。</p>
+<p><img src="http://static.zybuluo.com/timothy-tianmu/idcueu8cgztaqlrp8awon6t9/popup.png" alt="popup.png-10.1kB"></p>
+<p>比如当我们需要编写上面这个页面弹窗组件，我们首先需要编写组件的HTML静态结构以及CSS样式，如下代码所示：</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">&lt;!-- index.html --&gt;</span></span><br><span class="line"></span><br><span class="line"> <span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">"popup-wrapper"</span>&gt;</span></span><br><span class="line">   <span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">"popup-title-wrapper"</span>&gt;</span></span><br><span class="line">     <span class="tag">&lt;<span class="name">h1</span> <span class="attr">class</span>=<span class="string">"popup-title"</span>&gt;</span>标题<span class="tag">&lt;/<span class="name">h1</span>&gt;</span></span><br><span class="line">   <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line">   <span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">"popup-content-wrapper"</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">p</span> <span class="attr">class</span>=<span class="string">"popup-content"</span>&gt;</span>内容<span class="tag">&lt;/<span class="name">p</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">"popup-confirm"</span>&gt;</span>确认<span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">"popup-cancel"</span>&gt;</span>取消<span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line">   <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line"> <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">// index.css</span><br><span class="line"></span><br><span class="line"><span class="selector-class">.popup-wrapper</span> &#123;</span><br><span class="line">  <span class="attribute">width</span>: <span class="number">300px</span>;</span><br><span class="line">  <span class="attribute">height</span>: <span class="number">200px</span>;</span><br><span class="line">  ...</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="selector-class">.popup-title-wrapper</span> &#123;</span><br><span class="line">  <span class="attribute">height</span>: <span class="number">50px</span>;</span><br><span class="line">  ...</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="selector-class">.popup-content-wrapper</span> &#123;</span><br><span class="line">  <span class="attribute">height</span>: <span class="number">150px</span>;</span><br><span class="line">  ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>可以看到我们在为Dom元素添加类选择器时，都在类名前加上了popup前缀，这是因为CSS不支持命名空间，多个组件中的Dom元素如果用了相同的命名，可能会导致混乱。</p>
+<p><strong>虽然选择器可以根据Dom结构选择到正确的元素，但是外层还是有可能造成冲突，而且选择器嵌套太深可能导致性能上的问题。而在类名前加上组件前缀是简单的解决冲突且没有副作用的方案</strong>。</p>
+<p>编写完静态页面之后，我们就需要为组件添加逻辑了。首先，为了让组件之间相互隔离，不让变量名称相互影响，我们JS文件中使用一个匿名的自执行函数包裹组件的逻辑，匿名函数中的变量不会影响到外面。最后我们通过将变量绑定在window上来导出我们希望导出的变量。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">(<span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">  <span class="function"><span class="keyword">function</span> <span class="title">Popup</span>(<span class="params"></span>) </span>&#123;&#125;</span><br><span class="line">  <span class="built_in">window</span>.Popup = Popup</span><br><span class="line">&#125;)()</span><br></pre></td></tr></table></figure>
+<p>在弹窗对象的构造函数中，我们将弹窗相关的宽、高、位置等信息绑定到this，也就是弹窗对象上。因为弹窗是动态生成的，因此我们将之前编写的弹窗的静态HTML结构作为模板字符串存储到弹窗对象上，并且将标题和内容这些区域作为可替换的变量存储。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">(<span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">  <span class="function"><span class="keyword">function</span> <span class="title">Popup</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">    <span class="keyword">this</span>.width = <span class="number">300</span></span><br><span class="line">    <span class="keyword">this</span>.height = <span class="number">200</span></span><br><span class="line">    <span class="keyword">this</span>.x = <span class="number">0</span></span><br><span class="line">    <span class="keyword">this</span>.y = <span class="number">0</span></span><br><span class="line">    <span class="keyword">this</span>.data = &#123;</span><br><span class="line">      title: <span class="string">"提示"</span>,</span><br><span class="line">      content: <span class="string">"您确认吗？"</span></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">this</span>.template  = <span class="string">`</span></span><br><span class="line"><span class="string">      &lt;div class="popup-title-wrapper"&gt;</span></span><br><span class="line"><span class="string">        &lt;h1 class="popup-title"&gt;<span class="subst">$&#123;<span class="keyword">this</span>.data.title&#125;</span>&lt;/h1&gt;</span></span><br><span class="line"><span class="string">      &lt;/div&gt;</span></span><br><span class="line"><span class="string">      &lt;div class="popup-content-wrapper"&gt;</span></span><br><span class="line"><span class="string">          &lt;p class="popup-content"&gt;<span class="subst">$&#123;<span class="keyword">this</span>.data.content&#125;</span>&lt;/p&gt;</span></span><br><span class="line"><span class="string">          &lt;div class="popup-confirm"&gt;确认&lt;/div&gt;</span></span><br><span class="line"><span class="string">          &lt;div class="popup-cancel"&gt;取消&lt;/div&gt;</span></span><br><span class="line"><span class="string">      &lt;/div&gt;</span></span><br><span class="line"><span class="string">    `</span></span><br><span class="line">  &#125;</span><br><span class="line">  <span class="built_in">window</span>.Popup = Popup</span><br><span class="line">&#125;)()</span><br></pre></td></tr></table></figure>
+<p>弹窗的内部状态都通过构造函数存储到弹窗对象上了，现在我们要来编写弹窗的行为。我们在Popup构造函数的原型对象上绑定函数，这样就能为通过<code>new Popup()</code>实例化生成的对象提供这些方法。</p>
+<p>我们通过<code>bindUI</code>函数将弹窗对象上存储的弹窗的HTML模板转换为Dom，并且绑定到页面上，然后通过<code>bindEvents</code>函数在Dom上绑定相关事件。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br></pre></td><td class="code"><pre><span class="line">(<span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">  <span class="function"><span class="keyword">function</span> <span class="title">Popup</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">    <span class="comment">// 省略其他弹窗相关信息...</span></span><br><span class="line">    <span class="keyword">this</span>.boundingElement = <span class="built_in">document</span>.getElementsByClassName(<span class="string">"popup-wrapper"</span>)[<span class="number">0</span>]</span><br><span class="line">    <span class="keyword">this</span>.rendered = <span class="literal">false</span></span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  Popup.prototype.bindUI = <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">    <span class="keyword">this</span>.boundingElement.insertAdjacentHTML(<span class="string">"beforeend"</span>, <span class="keyword">this</span>.template)</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  Popup.prototype.bindEvents = <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">    <span class="keyword">var</span> self = <span class="keyword">this</span></span><br><span class="line">    <span class="keyword">this</span>.boundingElement.onclick = <span class="function"><span class="keyword">function</span>(<span class="params">ev</span>) </span>&#123;</span><br><span class="line">      <span class="keyword">var</span> t = ev.target</span><br><span class="line">      <span class="keyword">if</span> (t.classList.contains(<span class="string">"popup-confirm"</span>)</span><br><span class="line">        || t.classList.contains(<span class="string">"popup-cancel"</span>)) &#123;</span><br><span class="line">        self.close()</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  Popup.prototype.render = <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">    <span class="keyword">this</span>.bindUI()</span><br><span class="line">    <span class="keyword">this</span>.bindEvents()</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  Popup.prototype.close = <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">    <span class="keyword">this</span>.boundingElement.classList.add(<span class="string">"disapear"</span>)</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  Popup.prototype.open = <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (!<span class="keyword">this</span>.rendered) &#123;</span><br><span class="line">      <span class="keyword">this</span>.render()</span><br><span class="line">      <span class="keyword">return</span></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">this</span>.boundingElement.classList.remove(<span class="string">"disapear"</span>)</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  Popup.prototype.resize = <span class="function"><span class="keyword">function</span>(<span class="params">width, height</span>) </span>&#123;</span><br><span class="line">    <span class="keyword">this</span>.boundingElement.style.width = width</span><br><span class="line">    <span class="keyword">this</span>.boundingElement.style.height = height</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="built_in">window</span>.Popup = Popup</span><br><span class="line">&#125;)()</span><br></pre></td></tr></table></figure>
+<p>通过上面的代码我们就完整地封装了一个弹窗组件。使用时，通过Popup构造函数实例化弹窗对象，调用open方法初始化弹窗的Dom结构绑定到页面上，完成页面渲染。方式如下：</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">&lt;!-- 引入css样式 --&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">link</span> <span class="attr">rel</span>=<span class="string">"stylesheet"</span> <span class="attr">href</span>=<span class="string">"./index.css"</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="comment">&lt;!-- 引入弹窗组件的脚本 --&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">script</span> <span class="attr">src</span>=<span class="string">"./popup.js"</span>&gt;</span><span class="undefined"></span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">script</span>&gt;</span><span class="undefined"></span></span><br><span class="line"><span class="javascript">  <span class="keyword">var</span> popup = <span class="keyword">new</span> Popup()</span></span><br><span class="line"><span class="undefined">  popup.open()</span></span><br><span class="line"><span class="undefined"></span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<h2 id="抽象弹窗组件基类"><a href="#抽象弹窗组件基类" class="headerlink" title="抽象弹窗组件基类"></a>抽象弹窗组件基类</h2><p>我们实现的这个弹窗组件的HTML结构和绑定的事件都是固定的，但是在一个复杂项目中可能会用到多种类型的弹窗，因此我们可以抽象出一个弹窗的抽象基类，让具体类型的弹窗继承自它。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line">(<span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">function</span> <span class="title">Popup</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.boundingElement = <span class="built_in">document</span>.getElementsByClassName(<span class="string">"popup-wrapper"</span>)[<span class="number">0</span>]</span><br><span class="line">        <span class="keyword">this</span>.rendered = <span class="literal">false</span></span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    Popup.prototype.bindUI = <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.boundingElement.insertAdjacentHTML(<span class="string">"beforeend"</span>, <span class="keyword">this</span>.template)</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    Popup.prototype.bindEvents = <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;&#125;</span><br><span class="line">    </span><br><span class="line">    Popup.prototype.render = <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.bindUI()</span><br><span class="line">        <span class="keyword">this</span>.bindEvents()</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    Popup.prototype.close = <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.boundingElement.classList.add(<span class="string">"disapear"</span>)</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    Popup.prototype.open = <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (!<span class="keyword">this</span>.rendered) &#123;</span><br><span class="line">          <span class="keyword">this</span>.render()</span><br><span class="line">          <span class="keyword">return</span></span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">this</span>.boundingElement.classList.remove(<span class="string">"disapear"</span>)</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    Popup.prototype.resize = <span class="function"><span class="keyword">function</span>(<span class="params">width, height</span>) </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.boundingElement.style.width = width</span><br><span class="line">        <span class="keyword">this</span>.boundingElement.style.height = height</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="built_in">window</span>.Popup = Popup</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+<p>在抽象基类中我们将所有弹窗组件共有的一些功能抽象出来，比如都是挂载到页面的同一个元素下，都在open函数中被创建并绘制。</p>
+<p>而对于每个组件分别具有不同行为的函数，我们在基类中将它定义为空函数，留给继承该类的具体的弹窗类去实现。基类通过一个render函数规定渲染组件时调用的函数以及调用的顺序，子类可以根据自身需求覆盖父类render流程中调用的函数，这样render流程执行到相应的函数时就会调用子类实现的版本。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></td><td class="code"><pre><span class="line">(<span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">  <span class="function"><span class="keyword">function</span> <span class="title">ConfirmPopup</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">    <span class="comment">// 调用父类的构造函数</span></span><br><span class="line">    Popup.call(<span class="keyword">this</span>)</span><br><span class="line">    <span class="keyword">this</span>.width = <span class="number">300</span></span><br><span class="line">    <span class="keyword">this</span>.height = <span class="number">200</span></span><br><span class="line">    <span class="keyword">this</span>.x = <span class="number">0</span></span><br><span class="line">    <span class="keyword">this</span>.y = <span class="number">0</span></span><br><span class="line">    <span class="keyword">this</span>.data = &#123;</span><br><span class="line">      title: <span class="string">"提示"</span>,</span><br><span class="line">      content: <span class="string">"您确认吗？"</span></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">this</span>.template  = <span class="string">`</span></span><br><span class="line"><span class="string">      &lt;div class="popup-title-wrapper"&gt;</span></span><br><span class="line"><span class="string">        &lt;h1 class="popup-title"&gt;<span class="subst">$&#123;<span class="keyword">this</span>.data.title&#125;</span>&lt;/h1&gt;</span></span><br><span class="line"><span class="string">      &lt;/div&gt;</span></span><br><span class="line"><span class="string">      &lt;div class="popup-content-wrapper"&gt;</span></span><br><span class="line"><span class="string">          &lt;p class="popup-content"&gt;<span class="subst">$&#123;<span class="keyword">this</span>.data.content&#125;</span>&lt;/p&gt;</span></span><br><span class="line"><span class="string">          &lt;div class="popup-confirm"&gt;确认&lt;/div&gt;</span></span><br><span class="line"><span class="string">          &lt;div class="popup-cancel"&gt;取消&lt;/div&gt;</span></span><br><span class="line"><span class="string">      &lt;/div&gt;</span></span><br><span class="line"><span class="string">    `</span></span><br><span class="line">  &#125;</span><br><span class="line">    </span><br><span class="line">  <span class="comment">// 继承自Popup类</span></span><br><span class="line">  ConfirmPopup.prototype = <span class="built_in">Object</span>.create(Popup.prototype)</span><br><span class="line"></span><br><span class="line">  ConfirmPopup.prototype.bindEvents = <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">    <span class="keyword">var</span> self = <span class="keyword">this</span></span><br><span class="line">    <span class="keyword">this</span>.boundingElement.onclick = <span class="function"><span class="keyword">function</span>(<span class="params">ev</span>) </span>&#123;</span><br><span class="line">      <span class="keyword">var</span> t = ev.target</span><br><span class="line">      <span class="keyword">if</span> (t.classList.contains(<span class="string">"popup-confirm"</span>)</span><br><span class="line">      || t.classList.contains(<span class="string">"popup-cancel"</span>)) &#123;</span><br><span class="line">        self.close()</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="built_in">window</span>.ConfirmPopup = ConfirmPopup</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+<h2 id="自定义组件事件"><a href="#自定义组件事件" class="headerlink" title="自定义组件事件"></a>自定义组件事件</h2><p>上面实现ConfirmPopup子类时定义了自己的bindEvents函数，用来绑定组件中的按钮点击事件与相应的处理函数。但是很多时候，我们在定义一个组件类时，并不知道在组件中按下一个按钮或者移动一下鼠标会有什么事件触发，它的处理逻辑可能需要在其他组件中定义，我们想将这个点击事件作为一个组件事件被触发，而具体触发的处理逻辑由其他组件去实现。</p>
+<p>因此我们需要通过一个事件总线完成组件之间的通信，下面我们实现一个EventBus类用于注册和分发自定义事件：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line">(<span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">function</span> <span class="title">EventBus</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.handlers = &#123;&#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    EventBus.prototype.on(eventName, handler) &#123;</span><br><span class="line">        <span class="keyword">var</span> ev = <span class="keyword">this</span>.handlers[eventName]</span><br><span class="line">        <span class="keyword">if</span> (ev === <span class="literal">undefined</span>) &#123;</span><br><span class="line">          <span class="keyword">this</span>.handlers[eventName] = []</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">var</span> h <span class="keyword">in</span> ev) &#123;</span><br><span class="line">            <span class="keyword">if</span> (h === handler) &#123;</span><br><span class="line">                <span class="keyword">return</span></span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        ev.push(handler)</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    EventBus.prototype.emit(eventName, args) &#123;</span><br><span class="line">        <span class="keyword">if</span> (<span class="built_in">Array</span>.isArray(<span class="keyword">this</span>.events[eventName])) &#123;</span><br><span class="line">            <span class="keyword">this</span>.handlers[eventName].forEach(<span class="function"><span class="params">h</span> =&gt;</span> &#123;</span><br><span class="line">                h(args)</span><br><span class="line">            &#125;);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="built_in">window</span>.eventbus = <span class="keyword">new</span> EventBus()</span><br><span class="line">&#125;)()</span><br></pre></td></tr></table></figure>
+<p>EventBus类的on函数用于在事件总线上添加一个事件到相应的处理函数的映射，而emit函数用于触发之前用on添加的事件，触发事件后，注册到该事件上的所有处理函数都会被执行。</p>
+<p>下面我们用事件总线改写之前组件bindEvents相关的代码：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line">(<span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">  <span class="function"><span class="keyword">function</span> <span class="title">ConfirmPopup</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">    <span class="comment">// 调用父类的构造函数</span></span><br><span class="line">    Popup.call(<span class="keyword">this</span>)</span><br><span class="line">    <span class="comment">// 省略相关信息...</span></span><br><span class="line">  &#125;</span><br><span class="line">    </span><br><span class="line">  <span class="comment">// 继承自Popup类</span></span><br><span class="line">  ConfirmPopup.prototype = <span class="built_in">Object</span>.create(Popup.prototype)</span><br><span class="line"></span><br><span class="line">  ConfirmPopup.prototype.bindEvents = <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">    <span class="keyword">var</span> self = <span class="keyword">this</span></span><br><span class="line">    </span><br><span class="line">    <span class="comment">// 注册popup_confirm事件以及事件处理函数</span></span><br><span class="line">    <span class="built_in">window</span>.eventbus.on(<span class="string">"popup_confirm"</span>, <span class="function"><span class="keyword">function</span>(<span class="params">target</span>) </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (target.classList.contains(<span class="string">"popup-confirm"</span>)</span><br><span class="line">        || target.classList.contains(<span class="string">"popup-cancel"</span>)) &#123;</span><br><span class="line">            self.close()</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// 点击弹窗时触发popup_confirm事件</span></span><br><span class="line">    <span class="keyword">this</span>.boundingElement.onclick = <span class="function"><span class="keyword">function</span>(<span class="params">ev</span>) </span>&#123;</span><br><span class="line">        <span class="built_in">window</span>.eventbus.emit(<span class="string">"popup_confirm"</span>, ev.target)</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="built_in">window</span>.ConfirmPopup = ConfirmPopup</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/blog/tags/前端/" rel="tag"># 前端</a>
+          
+            <a href="/blog/tags/组件化/" rel="tag"># 组件化</a>
+          
+            <a href="/blog/tags/JavaScript/" rel="tag"># JavaScript</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/blog/2019/04/20/函数抽象的原理/" rel="next" title="函数抽象的原理">
+                <i class="fa fa-chevron-left"></i> 函数抽象的原理
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+  </div>
+
+
+          </div>
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">木木</p>
+              <div class="site-description motion-element" itemprop="description">记录技术，学习笔记，生活感悟</div>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/blog/archives/">
+                
+                    <span class="site-state-item-count">4</span>
+                    <span class="site-state-item-name">日志</span>
+                  </a>
+                </div>
+              
+
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  
+                    
+                      <a href="/blog/tags/">
+                    
+                  
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">6</span>
+                    <span class="site-state-item-name">标签</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+
+          
+
+          
+            <div class="links-of-author motion-element">
+              
+                <span class="links-of-author-item">
+                  
+                  
+                    
+                  
+                  
+                    
+                  
+                  <a href="https://github.com/timothy-tianmu" title="GitHub &rarr; https://github.com/timothy-tianmu" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+                </span>
+              
+                <span class="links-of-author-item">
+                  
+                  
+                    
+                  
+                  
+                    
+                  
+                  <a href="mailto:tianmu_19970924@163.com" title="E-Mail &rarr; mailto:tianmu_19970924@163.com" rel="noopener" target="_blank"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                </span>
+              
+            </div>
+          
+
+          
+
+          
+          
+
+          
+            
+          
+          
+
+        </div>
+      </div>
+
+      
+      <!--noindex-->
+        <div class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+            
+            
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#组件化发展概述"><span class="nav-number">1.</span> <span class="nav-text">组件化发展概述</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#基于原型链的弹窗组件"><span class="nav-number">2.</span> <span class="nav-text">基于原型链的弹窗组件</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#抽象弹窗组件基类"><span class="nav-number">3.</span> <span class="nav-text">抽象弹窗组件基类</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#自定义组件事件"><span class="nav-number">4.</span> <span class="nav-text">自定义组件事件</span></a></li></ol></div>
+            
+
+          </div>
+        </div>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+  
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-snowflake-o"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">木木</span>
+
+  
+
+  
+</div>
+
+
+
+
+
+
+
+
+
+        
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+    
+
+    
+  </div>
+
+  
+
+<script>
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+    
+    
+      
+    
+  
+  <script color="0,0,255" opacity="0.5" zindex="-1" count="99" src="//cdn.jsdelivr.net/gh/theme-next/theme-next-canvas-nest@1/canvas-nest.min.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script src="/blog/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script src="/blog/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script src="/blog/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+
+  
+
+
+  <script src="/blog/js/utils.js?v=7.1.0"></script>
+
+  <script src="/blog/js/motion.js?v=7.1.0"></script>
+
+
+
+  
+  
+
+
+  <script src="/blog/js/affix.js?v=7.1.0"></script>
+
+  <script src="/blog/js/schemes/pisces.js?v=7.1.0"></script>
+
+
+
+
+  
+  <script src="/blog/js/scrollspy.js?v=7.1.0"></script>
+<script src="/blog/js/post-details.js?v=7.1.0"></script>
+
+
+
+  
+
+
+  <script src="/blog/js/next-boot.js?v=7.1.0"></script>
+
+
+  
+
+  
+
+  
+
+  
+
+
+  
+
+
+  
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
