@@ -1,0 +1,298 @@
+* {
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box;
+}
+html,body {
+  height: 100%;
+}
+header {
+  width: 100%;
+  height: 80px;
+  background: #fff;
+  border-bottom: 15px solid #EFF2F7;
+}
+
+header::after {
+  content: "";
+  display: block;
+  clear: both;
+}
+
+header .logo {
+  float: left;
+  width: 20%;
+  height: 65px;
+  line-height: 65px;
+  text-align: center;
+  font-size: 30px;
+  font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+  color: RGB(67, 100, 254);
+}
+
+header .publish-btn {
+  float: right;
+  width: 5%;
+  height: 40px;
+  border-radius: 20px;
+  margin-top: 10px;
+  margin-right: 2%;
+  text-align: center;
+  line-height: 35px;
+  color: #fff;
+  background: #4364FE;
+  cursor: pointer;
+}
+
+header .publish-btn:hover {
+  background: #425893;
+}
+
+header .delete-btn {
+  float: right;
+  width: 5%;
+  height: 40px;
+  border-radius: 20px;
+  margin-top: 10px;
+  margin-right: 8%;
+  text-align: center;
+  line-height: 35px;
+  color: #fff;
+  background: RGB(255, 120, 73);
+  cursor: pointer;
+}
+header .delete-btn:hover {
+  background: RGB(230, 67, 63);
+}
+
+.content {
+  position: absolute;
+  width: 100%;
+  top: 80px;
+  bottom: 0;
+  font-size: 0;
+}
+
+.content > #toolPane {
+  display: inline-block;
+  vertical-align: top;
+  width: 5%;
+  height: 100%;
+  border-right: 1px solid #EFF2F7;
+}
+
+.content > #toolPane > .tool {
+  height: 50px;
+  line-height: 50px;
+  text-align: center;
+}
+
+.content > #toolPane > .tool:hover {
+  cursor: pointer;
+  background: #EFF2F7;
+}
+
+.content > #toolPane .tool:nth-child(1) {color: #8392A7}
+.content > #toolPane .tool:nth-child(2) {color: #12CE66}
+.content > #toolPane .tool:nth-child(3) {color: #FFC82C}
+.content > #toolPane .tool:nth-child(4) {color: #1FB6FF}
+.content > #toolPane .tool:nth-child(5) {color: #FF7849}
+.content > #toolPane .tool:nth-child(6) {color: #7E5CEF}
+.content > #toolPane .tool:nth-child(7) {color: #425893}
+.content > #toolPane .tool:nth-child(8) {color: #343F4B}
+.content > #toolPane .tool:nth-child(9) {color: #969FAA}
+.content > #toolPane .tool:nth-child(10) {color: #969FAA}
+
+.content > #toolPane .iconfont {
+  font-size: 30px;
+  font-weight: 800;
+}
+
+.project-list {
+  display: inline-block;
+  width: 15%;
+  height: 100%;
+  vertical-align: top;
+  overflow: auto;
+}
+
+.project-list > .project-item {
+  list-style: none;
+  text-align: center;
+  padding: 10px;
+}
+.project-list > .project-item:hover,
+.project-list > .project-item.active
+{
+  cursor: pointer;
+  background: RGB(239, 242, 247)
+}
+
+.project-list > .project-item > .project-thumb {
+  width: 95%;
+  border: 1px solid #1FB6FF;
+  border-radius: 8px;
+  box-shadow: 2px 2px 2px #367ebd;
+}
+
+.project-list-head {
+  list-style: none;
+  font-size: 20px;
+  font-weight: 500;
+  text-align: center;
+  height: 50px;
+  line-height: 50px;
+  background: RGB(150, 159, 170);
+  background: RGB(66, 88, 147);
+  color: #fff;
+}
+
+.project-list-info {
+  list-style: none;
+  display: none;
+}
+
+.project-list-info.active {
+  list-style: none;
+  font-style: italic;
+  display: block;
+  height: 60px;
+  line-height: 60px;
+  font-size: 15px;
+  text-align: center;
+}
+
+
+.board-draw-area {
+  position: relative;
+  display: inline-block;
+  vertical-align: top;
+  width: 60%;
+  height: 100%;
+  background: #EFF2F7;
+}
+
+#drawboard_wrapper {
+  position: absolute;
+  width: 96%;
+  height: 100%;
+  margin-left: 2%;
+}
+
+#drawboard_wrapper > #drawboard_ui_canvas {
+  position: absolute;
+  left:0;
+  top:0;
+  z-index: 4;
+}
+
+#drawboard_wrapper > #drawboard_assist_canvas {
+  position: absolute;
+  left:0;
+  top:0;
+  z-index: 3;
+}
+
+#drawboard_wrapper > #drawboard_main_canvas {
+  position: absolute;
+  left:0;
+  top:0;
+  z-index: 2;
+}
+
+#drawboard_wrapper > #drawboard_bg_canvas {
+  position: absolute;
+  left:0;
+  top:0;
+  z-index: 1;
+}
+
+#drawboard_input {
+  border: none;
+  outline: none;
+}
+
+.board-details-wrapper {
+  display: inline-block;
+  vertical-align: top;
+  width: 20%;
+  height: 100%;
+}
+
+.board-detail {
+  font-size: 15px;
+}
+
+.board-detail-head {
+  height: 50px;
+  line-height: 50px;
+  padding-left: 20px;
+  color: RGB(150, 159, 170);
+  background: #F9FAFC;
+}
+
+.board-detail-body {
+  padding: 20px;
+  color: RGB(150, 159, 170);
+}
+
+
+/* input样式自定义 */
+
+input[type=color] {
+  display: inline-block;
+  height: 30px;
+  width: 100%;
+  margin: 18px 0;
+}
+
+input[type=range] {
+  -webkit-appearance: none;
+  margin: 18px 0;
+  width: 100%;
+}
+input[type=range]:focus {
+  outline: none;
+}
+input[type=range]::-webkit-slider-runnable-track {
+  width: 100%;
+  height: 3px;
+  cursor: pointer;
+  box-shadow: 1px 1px 1px #000000, 0px 0px 1px #0d0d0d;
+  background: #3071a9;
+  border-radius: 1.3px;
+  border: 0.2px solid #010101;
+}
+input[type=range]::-webkit-slider-thumb {
+  box-shadow: 1px 1px 1px #000000, 0px 0px 1px #0d0d0d;
+  border: 1px solid #000000;
+  height: 15px;
+  width: 15px;
+  border-radius: 3px;
+  background: #ffffff;
+  cursor: pointer;
+  -webkit-appearance: none;
+  margin-top: -7px;
+}
+input[type=range]:focus::-webkit-slider-runnable-track {
+  background: #367ebd;
+}
+
+input[type=range]::-moz-range-track {
+  width: 100%;
+  height: 3px;
+  cursor: pointer;
+  box-shadow: 1px 1px 1px #000000, 0px 0px 1px #0d0d0d;
+  background: #3071a9;
+  border-radius: 1.3px;
+  border: 0.2px solid #010101;
+}
+input[type=range]::-moz-range-thumb {
+  box-shadow: 1px 1px 1px #000000, 0px 0px 1px #0d0d0d;
+  border: 1px solid #000000;
+  height: 15px;
+  width: 15px;
+  border-radius: 3px;
+  background: #ffffff;
+  cursor: pointer;
+}
