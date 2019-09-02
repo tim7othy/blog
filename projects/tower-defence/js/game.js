@@ -223,7 +223,7 @@ class Game {
 }
 
 var __main = function() {
-	var prefix = "/blog/projects/plane-war/"
+	var prefix = "/blog/projects/tower-defence/"
     imgPaths = {
         startBg: prefix + "img/startBg.png",
         startTitle: prefix + "img/startTitle.png",
