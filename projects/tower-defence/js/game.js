@@ -232,7 +232,7 @@ var __main = function() {
         back: prefix + "img/back.png",
         back_grey: prefix + "img/back_grey.png",
         towerBase: prefix + "img/towerBase.png",
-        editBox: prefix + "img/editBox.png",
+        editBox: prefix + "img/editbox.png",
         moneyBox: prefix + "img/moneyBox.png",
         numbers: prefix + "img/numbers.png",
         tip: prefix + "img/tip.png",
