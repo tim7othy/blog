@@ -1,0 +1,879 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-CN">
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/blog/lib/font-awesome/css/font-awesome.min.css?v=4.6.2">
+
+<link rel="stylesheet" href="/blog/css/main.css?v=7.1.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/blog/images/apple-touch-icon.png?v=7.1.0">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/blog/images/favicon-32x32.png?v=7.1.0">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/blog/images/favicon-16x16.png?v=7.1.0">
+
+
+
+
+
+
+
+
+<script id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/blog/',
+    scheme: 'Gemini',
+    version: '7.1.0',
+    sidebar: {"position":"left","display":"post","offset":12,"onmobile":false,"dimmer":false},
+    back2top: true,
+    back2top_sidebar: false,
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":true,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  <meta name="description" content="HTML5 Canvas应用实践（四）：构建画板应用上一篇文章中，我们已经完成了一个canvas图形渲染框架，接下来我们就可以使用我们的框架来实现一个画板应用。 项目预览地址：https://timothy-tianmu.github.io/blog/projects/muboard/index.html。 项目源码地址：https://github.com/timothy-tianmu/draw">
+<meta name="keywords" content="前端,canvas">
+<meta property="og:type" content="article">
+<meta property="og:title" content="HTML5-Canvas应用实践（四）：构建画板应用">
+<meta property="og:url" content="https://timothy-tianmu.github.io/blog/2019/09/04/HTML5-Canvas应用实践（四）：构建画板应用/index.html">
+<meta property="og:site_name" content="马猴实验室">
+<meta property="og:description" content="HTML5 Canvas应用实践（四）：构建画板应用上一篇文章中，我们已经完成了一个canvas图形渲染框架，接下来我们就可以使用我们的框架来实现一个画板应用。 项目预览地址：https://timothy-tianmu.github.io/blog/projects/muboard/index.html。 项目源码地址：https://github.com/timothy-tianmu/draw">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="https://timothy-tianmu.github.io/blog/images/1567561230588.png">
+<meta property="og:image" content="https://timothy-tianmu.github.io/blog/images/1567573557991.png">
+<meta property="og:updated_time" content="2019-09-04T08:30:17.131Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="HTML5-Canvas应用实践（四）：构建画板应用">
+<meta name="twitter:description" content="HTML5 Canvas应用实践（四）：构建画板应用上一篇文章中，我们已经完成了一个canvas图形渲染框架，接下来我们就可以使用我们的框架来实现一个画板应用。 项目预览地址：https://timothy-tianmu.github.io/blog/projects/muboard/index.html。 项目源码地址：https://github.com/timothy-tianmu/draw">
+<meta name="twitter:image" content="https://timothy-tianmu.github.io/blog/images/1567561230588.png">
+
+
+
+
+
+  
+  
+  <link rel="canonical" href="https://timothy-tianmu.github.io/blog/2019/09/04/HTML5-Canvas应用实践（四）：构建画板应用/">
+
+
+
+<script id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>HTML5-Canvas应用实践（四）：构建画板应用 | 马猴实验室</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .motion-element,
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-title { opacity: initial; }
+
+  .use-motion .logo,
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/blog/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">马猴实验室</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+    
+      
+        <p class="site-subtitle">相信的心就是你的魔法</p>
+      
+    
+    
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="切换导航栏">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+        
+          
+          <li class="menu-item menu-item-home">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/blog/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i> <br>首页</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-tags">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/blog/tags/" rel="section"><i class="menu-item-icon fa fa-fw fa-tags"></i> <br>标签</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-categories">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/blog/categories/" rel="section"><i class="menu-item-icon fa fa-fw fa-th"></i> <br>分类</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-archives">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/blog/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br>归档</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-个人项目">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/blog/projects/" rel="section"><i class="menu-item-icon fa fa-fw fa-user"></i> <br>个人项目</a>
+
+  </li>
+
+      
+      
+    </ul>
+  
+
+  
+
+  
+</nav>
+
+
+
+  
+
+
+
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+            
+
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://timothy-tianmu.github.io/blog/blog/2019/09/04/HTML5-Canvas应用实践（四）：构建画板应用/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="木木">
+      <meta itemprop="description" content="记录技术，学习笔记，生活感悟">
+      <meta itemprop="image" content="/blog/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="马猴实验室">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">HTML5-Canvas应用实践（四）：构建画板应用
+
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-09-04 16:16:13 / 修改时间：16:30:17" itemprop="dateCreated datePublished" datetime="2019-09-04T16:16:13+08:00">2019-09-04</time>
+            
+
+            
+              
+
+              
+            
+          </span>
+
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="HTML5-Canvas应用实践（四）：构建画板应用"><a href="#HTML5-Canvas应用实践（四）：构建画板应用" class="headerlink" title="HTML5 Canvas应用实践（四）：构建画板应用"></a>HTML5 Canvas应用实践（四）：构建画板应用</h1><p>上一篇文章中，我们已经完成了一个canvas图形渲染框架，接下来我们就可以使用我们的框架来实现一个画板应用。</p>
+<p>项目预览地址：<a href="https://timothy-tianmu.github.io/blog/projects/muboard/index.html。">https://timothy-tianmu.github.io/blog/projects/muboard/index.html。</a></p>
+<p>项目源码地址：<a href="https://github.com/timothy-tianmu/drawboard" target="_blank" rel="noopener">https://github.com/timothy-tianmu/drawboard</a></p>
+<p>最终实现的效果如下：</p>
+<p><img src="https://timothy-tianmu.github.io/blog/images/1567561230588.png" alt="1567561230588"></p>
+<h2 id="项目技术要点："><a href="#项目技术要点：" class="headerlink" title="项目技术要点："></a>项目技术要点：</h2><p>整个画布被分为不同的组件，最左侧的工具列表，画布项目列表，中间的渲染画布，右侧调整参数的参数板，以及顶部的操作导航栏。</p>
+<h3 id="实现通用方法"><a href="#实现通用方法" class="headerlink" title="实现通用方法"></a>实现通用方法</h3><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br></pre></td><td class="code"><pre><span class="line">(<span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">  <span class="built_in">window</span>.log = <span class="built_in">console</span>.log.bind(<span class="built_in">console</span>)</span><br><span class="line">  <span class="built_in">window</span>.isFunc = <span class="function"><span class="keyword">function</span>(<span class="params">func</span>) </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="built_in">Object</span>.prototype.toString.call(func) === <span class="string">"[object Function]"</span></span><br><span class="line">  &#125;</span><br><span class="line">  <span class="built_in">window</span>.getRandom = <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">    <span class="keyword">var</span> r = <span class="built_in">Math</span>.random()</span><br><span class="line">    <span class="keyword">var</span> d = <span class="keyword">new</span> <span class="built_in">Date</span>().getTime()</span><br><span class="line">    <span class="keyword">return</span> (d * r).toString().replace(<span class="string">"."</span>, <span class="string">""</span>).slice(<span class="number">0</span>, <span class="number">10</span>)</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="built_in">window</span>.hasClass = <span class="function"><span class="keyword">function</span>(<span class="params">el, c</span>) </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (el.classList) &#123;</span><br><span class="line">      <span class="keyword">return</span> el.classList.contains(c)</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">      <span class="keyword">return</span> <span class="keyword">new</span> <span class="built_in">RegExp</span>(<span class="string">"^\\s*"</span> + c + <span class="string">"\\s*&amp;"</span>).test(el.className)</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">var</span> _addClass = <span class="function"><span class="keyword">function</span>(<span class="params">el, c</span>) </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (el.classList) &#123;</span><br><span class="line">			el.classList.add(c)</span><br><span class="line">		&#125; <span class="keyword">else</span> <span class="keyword">if</span> (!hasClass(el, c)) &#123;</span><br><span class="line">			el.className += <span class="string">''</span> + c</span><br><span class="line">		&#125;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="built_in">window</span>.addClass = <span class="function"><span class="keyword">function</span>(<span class="params">el, c</span>) </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (<span class="built_in">Array</span>.isArray(el)) &#123;</span><br><span class="line">      <span class="keyword">for</span> (<span class="keyword">var</span> i = <span class="number">0</span>; i &lt; el.length; i++) &#123;</span><br><span class="line">        _addClass(el[i], c)</span><br><span class="line">      &#125;</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">      _addClass(el, c)</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">var</span> _removeClass = <span class="function"><span class="keyword">function</span>(<span class="params">el, c</span>) </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (el.classList) &#123;</span><br><span class="line">      el.classList.remove(c)</span><br><span class="line">    &#125; <span class="keyword">else</span> <span class="keyword">if</span> (hasClass(c)) &#123;</span><br><span class="line">      el.className = el.className.replace(<span class="keyword">new</span> <span class="built_in">RegExp</span>(<span class="string">"^\\s*"</span> + c + <span class="string">"\\s*$"</span>), <span class="string">" "</span>)</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="built_in">window</span>.removeClass = <span class="function"><span class="keyword">function</span>(<span class="params">el, c</span>) </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (<span class="built_in">Array</span>.isArray(el)) &#123;</span><br><span class="line">      <span class="keyword">for</span> (<span class="keyword">var</span> i = <span class="number">0</span>; i &lt; el.length; i++) &#123;</span><br><span class="line">        _removeClass(el[i], c)</span><br><span class="line">      &#125;</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">      _removeClass(el, c)</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="built_in">window</span>.delegate = <span class="function"><span class="keyword">function</span>(<span class="params">el, eventType, selector, callback</span>) </span>&#123;</span><br><span class="line">    el.addEventListener(eventType, <span class="function"><span class="keyword">function</span>(<span class="params">e</span>) </span>&#123;</span><br><span class="line">      <span class="keyword">var</span> t = e.target </span><br><span class="line">      <span class="keyword">while</span> (!t.matches(selector)) &#123;</span><br><span class="line">        <span class="keyword">if</span> (t === el) &#123;</span><br><span class="line">          t = <span class="literal">null</span></span><br><span class="line">          <span class="keyword">break</span></span><br><span class="line">        &#125;</span><br><span class="line">        t = t.parentElement</span><br><span class="line">      &#125;</span><br><span class="line">      t &amp;&amp; callback(e, t)</span><br><span class="line">    &#125;)</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="built_in">window</span>.siblings = <span class="function"><span class="keyword">function</span>(<span class="params">el</span>) </span>&#123;</span><br><span class="line">    <span class="keyword">var</span> parent = el.parentElement</span><br><span class="line">    <span class="keyword">var</span> sibs = []</span><br><span class="line">    <span class="keyword">if</span> (parent) &#123;</span><br><span class="line">      <span class="keyword">var</span> children = parent.children</span><br><span class="line">      <span class="keyword">for</span> (<span class="keyword">var</span> i = <span class="number">0</span>; i&lt;children.length; i++) &#123;</span><br><span class="line">        <span class="keyword">if</span> (children[i] !== el) &#123;</span><br><span class="line">          sibs.push(children[i])</span><br><span class="line">        &#125;</span><br><span class="line">      &#125;</span><br><span class="line">    &#125; </span><br><span class="line">    <span class="keyword">return</span> sibs</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">&#125;)()</span><br></pre></td></tr></table></figure>
+<h3 id="工具列表："><a href="#工具列表：" class="headerlink" title="工具列表："></a>工具列表：</h3><p>工具列表中每个工具都实现为一个类，提供了不同的功能，这些功能都有一些共性，比如需要记录鼠标是否按下，或者鼠标在当前画布上的坐标位置，因此我们抽象出一个工具基类，让所有的工具继承自这个基类：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Tool</span> </span>&#123;</span><br><span class="line">  <span class="keyword">constructor</span>(board) &#123;</span><br><span class="line">    <span class="keyword">this</span>.board = board</span><br><span class="line">    <span class="keyword">this</span>.positions = []</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  install() &#123;</span><br><span class="line">    <span class="keyword">this</span>.initEvents()</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  initEvents() &#123;</span><br><span class="line">    <span class="keyword">this</span>.isMouseDown = <span class="literal">false</span></span><br><span class="line">    <span class="keyword">this</span>.isClicked = <span class="literal">false</span></span><br><span class="line">    <span class="keyword">this</span>.mouseDownHandler = <span class="function">(<span class="params">ev</span>) =&gt;</span> &#123; <span class="keyword">this</span>.onMouseDown(ev) &#125; </span><br><span class="line">    <span class="keyword">this</span>.mouseMoveHandler = <span class="function">(<span class="params">ev</span>) =&gt;</span> &#123; <span class="keyword">this</span>.onMouseMove(ev) &#125; </span><br><span class="line">    <span class="keyword">this</span>.mouseUpHandler = <span class="function">(<span class="params">ev</span>) =&gt;</span> &#123; <span class="keyword">this</span>.onMouseUp(ev) &#125; </span><br><span class="line">    <span class="built_in">window</span>.addEventListener(<span class="string">"mousedown"</span>, <span class="keyword">this</span>.mouseDownHandler)</span><br><span class="line">    <span class="built_in">window</span>.addEventListener(<span class="string">"mousemove"</span>, <span class="keyword">this</span>.mouseMoveHandler)</span><br><span class="line">    <span class="built_in">window</span>.addEventListener(<span class="string">"mouseup"</span>, <span class="keyword">this</span>.mouseUpHandler)</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  unInstall() &#123;</span><br><span class="line">    <span class="built_in">window</span>.removeEventListener(<span class="string">"mousedown"</span>, <span class="keyword">this</span>.mouseDownHandler)</span><br><span class="line">    <span class="built_in">window</span>.removeEventListener(<span class="string">"mousemove"</span>, <span class="keyword">this</span>.mouseMoveHandler)</span><br><span class="line">    <span class="built_in">window</span>.removeEventListener(<span class="string">"mouseup"</span>, <span class="keyword">this</span>.mouseUpHandler)</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  getPos(ev) &#123;</span><br><span class="line">    <span class="comment">// 鼠标事件在文档上的坐标</span></span><br><span class="line">    <span class="keyword">var</span> pageX = ev.pageX</span><br><span class="line">    <span class="keyword">var</span> pageY = ev.pageY</span><br><span class="line">    <span class="keyword">var</span> x = pageX - <span class="keyword">this</span>.board.offsetX</span><br><span class="line">    <span class="keyword">var</span> y = pageY - <span class="keyword">this</span>.board.offsetY</span><br><span class="line">    <span class="keyword">return</span> &#123;x, y&#125;</span><br><span class="line">  &#125;</span><br><span class="line">    </span><br><span class="line">  _pointInCanvasRange(pos) &#123;</span><br><span class="line">    <span class="keyword">var</span> w = <span class="keyword">this</span>.board.W</span><br><span class="line">    <span class="keyword">var</span> h = <span class="keyword">this</span>.board.H</span><br><span class="line">    <span class="keyword">return</span> pos.x &gt; <span class="number">0</span> &amp;&amp; pos.x &lt; w &amp;&amp; pos.y &gt; <span class="number">0</span> &amp;&amp; pos.y &lt; h</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  onMouseDown(ev) &#123;</span><br><span class="line">    <span class="keyword">this</span>.mouseDownPos = <span class="keyword">this</span>.getPos(ev) </span><br><span class="line">    <span class="keyword">this</span>.isMouseDown = <span class="literal">true</span></span><br><span class="line">    <span class="keyword">this</span>.isClicked = <span class="literal">false</span></span><br><span class="line">    <span class="keyword">this</span>.outOfRange = <span class="literal">false</span></span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  onMouseMove(ev) &#123;</span><br><span class="line">    <span class="keyword">this</span>.mouseMovePos = <span class="keyword">this</span>.getPos(ev)</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  onMouseUp(ev) &#123;</span><br><span class="line">    <span class="keyword">this</span>.mouseUpPos = <span class="keyword">this</span>.getPos(ev)</span><br><span class="line">    <span class="keyword">this</span>.isMouseDown = <span class="literal">false</span></span><br><span class="line">    <span class="keyword">var</span> pos1 = <span class="keyword">this</span>.mouseDownPos</span><br><span class="line">    <span class="keyword">var</span> pos2 = <span class="keyword">this</span>.mouseUpPos</span><br><span class="line">    <span class="keyword">if</span> (<span class="built_in">Math</span>.abs(pos2.x - pos1.x) &lt; <span class="number">3</span> &amp;&amp; <span class="built_in">Math</span>.abs(pos2.y - pos1.y) &lt; <span class="number">3</span>) &#123;</span><br><span class="line">      <span class="keyword">this</span>.isClicked = <span class="literal">true</span></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> (<span class="keyword">this</span>._pointInCanvasRange(pos1) &amp;&amp; <span class="keyword">this</span>._pointInCanvasRange(pos2)) &#123;</span><br><span class="line">      <span class="keyword">this</span>.outOfRange = <span class="literal">false</span></span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">      <span class="keyword">this</span>.outOfRange = <span class="literal">true</span></span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>在工具基类中我们维护了一个画布类，用于工具之后的绘制操作，画布类目前只需要提供绘制功能即可，因此我们使用一个DrawBoard类包装了一个我们之前实现的渲染框架类对象：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">DrawBoard</span> </span>&#123;</span><br><span class="line">    <span class="keyword">constructor</span>(rootId) &#123;</span><br><span class="line">        <span class="keyword">this</span>.canvas = <span class="keyword">new</span> Canvas().canvasElement</span><br><span class="line">        <span class="keyword">this</span>.ctx = <span class="keyword">this</span>.canvas.canvasContext</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>每个工具有一个install和uninstall方法，用于切换不同的工具之后安装相应工具的鼠标事件，以及将旧的工具绑定的鼠标事件移除。鼠标事件主要包括按下、移动和松开鼠标按键的动作，每个工具有所不同，但有一些通用的，比如在鼠标事件时记录鼠标在画布上的位置，记录鼠标是否按下、点击等等状态。</p>
+<h3 id="命令模式："><a href="#命令模式：" class="headerlink" title="命令模式："></a>命令模式：</h3><p>之后我们将会实现撤销和重做的功能，即返回到最后一次绘制动作之前的画布状态。最开始我使用的是每在画布上进行一次绘制动作，就将当前绘制完成后的canvas图形保存为图片，即通过canvas的<code>toDataURL(&quot;image/png&quot;)</code>API将当前图像转换为base64保存在一个图片链接中。我们将每步操作生成的图片链接维护在一个队列中，需要恢复时只需要创建一个Image对象，将Image对象的src设置为这个链接，并且绘制到画布上即可。</p>
+<p>但是后来发现这个方式消耗内存太大，每次操作都保存了一张图片到内存中，而事实上我可能只是画了一条线，一条线仅仅使用两个坐标点就可以记录。因此我使用了命令模式，即将每一步操作封装到一个命令对象中，命令对象包含了一个execute方法，该方法为操作的具体步骤，之后如果调用这个方法将会再次执行这个操作。而我们每进行一步操作，就创建一个command对象，保存到队列中。这样执行撤销时，我们只需要将队列中从第一个到倒数第二个命令全部再执行一遍即可。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Command</span> </span>&#123;</span><br><span class="line">  <span class="keyword">constructor</span>(receiver) &#123;</span><br><span class="line">    <span class="keyword">this</span>.receiver = receiver</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  execute() &#123;&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>上面是Command类的具体实现，receiver是command的execute方法的执行环境。</p>
+<p>现在我们就可以为Tool添加Command相关的实现了：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Tool</span> </span>&#123;</span><br><span class="line">  <span class="keyword">constructor</span>(board) &#123;</span><br><span class="line">    <span class="keyword">this</span>.board = board</span><br><span class="line">    <span class="keyword">this</span>.positions = []</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// 留给具体的工具子类实现</span></span><br><span class="line">  makeCommand() &#123;&#125;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// 执行命令的的上下文环境对象</span></span><br><span class="line">  getCommandContext() &#123;</span><br><span class="line">    <span class="keyword">return</span> &#123;</span><br><span class="line">      ctx: <span class="keyword">this</span>.board.mainCtx,</span><br><span class="line">      color: <span class="keyword">this</span>.board.color,</span><br><span class="line">      lineWidth: <span class="keyword">this</span>.board.lineWidth,</span><br><span class="line">      positions: <span class="keyword">this</span>.getPositions()</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// 将cmd加入到命令队列</span></span><br><span class="line">  setCommand(cmd) &#123;</span><br><span class="line">    <span class="keyword">this</span>.board.setHistory(cmd)</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  execCommand(cmd) &#123;</span><br><span class="line">    cmd.execute()</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">DrawBoard</span> </span>&#123;</span><br><span class="line">  setupHistory(capacity) &#123;</span><br><span class="line">    <span class="keyword">this</span>.history = &#123;</span><br><span class="line">      tail: <span class="number">0</span>,</span><br><span class="line">      curr: <span class="number">0</span>,</span><br><span class="line">      capacity: capacity,</span><br><span class="line">      queue: <span class="built_in">Array</span>(capacity)</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  setHistory(item) &#123;</span><br><span class="line">    <span class="keyword">var</span> h = <span class="keyword">this</span>.history</span><br><span class="line">    <span class="keyword">var</span> next = h.curr + <span class="number">1</span></span><br><span class="line">    <span class="keyword">if</span> (next &lt; h.capacity) &#123;</span><br><span class="line">      h.queue[next] = item</span><br><span class="line">    &#125;</span><br><span class="line">    h.curr = next</span><br><span class="line">    h.tail = next</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  cancel() &#123;</span><br><span class="line">    <span class="keyword">var</span> h = <span class="keyword">this</span>.history</span><br><span class="line">    <span class="keyword">if</span> (h.curr === <span class="number">0</span>) <span class="keyword">return</span></span><br><span class="line">    <span class="keyword">var</span> next = h.curr - <span class="number">1</span></span><br><span class="line">    <span class="keyword">if</span> (next &gt; <span class="number">0</span>) &#123;</span><br><span class="line">      <span class="keyword">this</span>.mainCtx.clearRect(<span class="number">0</span>, <span class="number">0</span>, <span class="keyword">this</span>.W, <span class="keyword">this</span>.H)</span><br><span class="line">      <span class="keyword">for</span> (<span class="keyword">var</span> i = <span class="number">1</span>; i &lt; h.curr; i++) &#123;</span><br><span class="line">        h.queue[i].execute()</span><br><span class="line">      &#125;</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">      <span class="keyword">this</span>.mainCtx.clearRect(<span class="number">0</span>, <span class="number">0</span>, <span class="keyword">this</span>.W, <span class="keyword">this</span>.H)</span><br><span class="line">    &#125;</span><br><span class="line">    h.curr = next</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  redo() &#123;</span><br><span class="line">    <span class="keyword">var</span> h = <span class="keyword">this</span>.history</span><br><span class="line">    <span class="keyword">if</span> (h.curr === h.tail) <span class="keyword">return</span></span><br><span class="line">    h.curr += <span class="number">1</span></span><br><span class="line">    <span class="keyword">this</span>.mainCtx.clearRect(<span class="number">0</span>, <span class="number">0</span>, <span class="keyword">this</span>.W, <span class="keyword">this</span>.H)</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">var</span> i = <span class="number">1</span>; i &lt; h.curr + <span class="number">1</span>; i++) &#123;</span><br><span class="line">      h.queue[i].execute()</span><br><span class="line">    &#125;</span><br><span class="line">    log(h)</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="自由画笔工具："><a href="#自由画笔工具：" class="headerlink" title="自由画笔工具："></a>自由画笔工具：</h3><p>自由画笔工具会根据我们鼠标的移动进行绘制，绘制的是自由曲线，我们通过在每次渲染循环时将当前鼠标位置与上一次渲染循环时的鼠标位置连线来模拟自由曲线。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">PenTool</span> <span class="keyword">extends</span> <span class="title">Tool</span> </span>&#123;</span><br><span class="line">  <span class="keyword">constructor</span>(board) &#123;</span><br><span class="line">    <span class="keyword">super</span>(board)</span><br><span class="line">    <span class="keyword">this</span>.toolType = PEN</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  makeCommand() &#123;</span><br><span class="line">    <span class="keyword">var</span> context = <span class="keyword">this</span>.getCommandContext()</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">new</span> PenDrawCommand(context)</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  onMouseDown(ev) &#123;</span><br><span class="line">    <span class="keyword">super</span>.onMouseDown(ev)</span><br><span class="line">    <span class="keyword">this</span>.addPos(<span class="keyword">this</span>.mouseDownPos)</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  onMouseMove(ev) &#123;</span><br><span class="line">    <span class="keyword">super</span>.onMouseMove(ev)</span><br><span class="line">    <span class="keyword">if</span> (!<span class="keyword">this</span>.isMouseDown) &#123;</span><br><span class="line">      <span class="keyword">return</span></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> (!<span class="keyword">this</span>.lastPos) &#123;</span><br><span class="line">      <span class="keyword">this</span>.lastPos = &#123;</span><br><span class="line">        ...this.mouseDownPos</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">this</span>.drawTmpLines()</span><br><span class="line">    <span class="comment">// 记录当前鼠标move的坐标，作为下一次绘制时的(lastPos)</span></span><br><span class="line">    <span class="keyword">this</span>.lastPos = &#123;</span><br><span class="line">      ...this.mouseMovePos</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// 将鼠标的移动轨迹加入到positions中</span></span><br><span class="line">    <span class="keyword">this</span>.addPos(<span class="keyword">this</span>.mouseMovePos)</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  drawTmpLines() &#123;</span><br><span class="line">    <span class="keyword">var</span> ctx = <span class="keyword">this</span>.board.uiCtx</span><br><span class="line">    ctx.save()</span><br><span class="line">    ctx.strokeStyle = <span class="keyword">this</span>.board.color</span><br><span class="line">    ctx.lineWidth = <span class="keyword">this</span>.board.lineWidth</span><br><span class="line">    Graphic.drawLine(ctx, <span class="keyword">this</span>.lastPos, <span class="keyword">this</span>.mouseMovePos)</span><br><span class="line">    ctx.restore()</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">  onMouseUp(ev) &#123;</span><br><span class="line">    <span class="keyword">super</span>.onMouseUp(ev)</span><br><span class="line">    <span class="keyword">if</span> (!<span class="keyword">this</span>.outOfRange) &#123;</span><br><span class="line">      <span class="keyword">this</span>.drawOn()</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">this</span>.clearUI()</span><br><span class="line">    <span class="keyword">this</span>.lastPos = <span class="literal">null</span></span><br><span class="line">    <span class="keyword">this</span>.clearPos()</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">PenDrawCommand</span> <span class="keyword">extends</span> <span class="title">Command</span> </span>&#123;</span><br><span class="line">  execute() &#123;</span><br><span class="line">    <span class="keyword">var</span> &#123;ctx, color, lineWidth, positions&#125; = <span class="keyword">this</span>.receiver</span><br><span class="line">    ctx.save()</span><br><span class="line">    ctx.strokeStyle = color</span><br><span class="line">    ctx.lineWidth = lineWidth</span><br><span class="line">    ctx.beginPath()</span><br><span class="line">    <span class="comment">// 将positions里的所有点连接起来</span></span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">var</span> i = <span class="number">0</span>; i &lt; positions.length; i++) &#123;</span><br><span class="line">      <span class="keyword">var</span> p = positions[i]</span><br><span class="line">      <span class="keyword">if</span> (i === <span class="number">0</span>) &#123;</span><br><span class="line">        ctx.moveTo(p.x, p.y)</span><br><span class="line">      &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        ctx.lineTo(p.x, p.y)</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    ctx.stroke()</span><br><span class="line">    ctx.restore()</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="矩形工具："><a href="#矩形工具：" class="headerlink" title="矩形工具："></a>矩形工具：</h3><p>矩形工具的一个难点在于，我们希望在鼠标拖拽的同时画布上的矩形能跟随鼠标改变形状，而释放鼠标时绘制当前矩形的形状到画布上。这就需要当我们在拖拽鼠标的时候，即时地清理画布，将之前绘制的矩形消除掉，并绘制最新的跟随鼠标的矩形。</p>
+<p>但是我们的画布上还有其他我们之前绘制的形状，如果清除画布，不仅矩形连其他形状也会被清除，因此我们使用两个画布来完成这个操作。一个画布叫做uiLayer，位于最上层，负责绘制当前与用户交互的图形，比如我们之前的拖拽矩形，因为只负责绘制一个当前交互的图形，因此可以随意地清除画布；另一个画布叫做mainLayer，当我们确定要绘制一个图形时，就将图像绘制到这个画布上。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">DrawBoard</span> </span>&#123;</span><br><span class="line">    <span class="keyword">constructor</span>() &#123;</span><br><span class="line">        <span class="comment">// 与用户动态交互的canvas层</span></span><br><span class="line">        <span class="keyword">var</span> uiLayer = <span class="keyword">new</span> Canvas(&#123;</span><br><span class="line">            id: <span class="string">"drawboard_ui_canvas"</span>,</span><br><span class="line">            parentId: <span class="keyword">this</span>.parentId,</span><br><span class="line">        &#125;)</span><br><span class="line">        <span class="keyword">this</span>.uiCanvas = uiLayer.canvasElement</span><br><span class="line">        <span class="keyword">this</span>.uiCtx = uiLayer.canvasContext</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 绘制主要画面的canvas层</span></span><br><span class="line">        <span class="keyword">var</span> mainLayer = <span class="keyword">new</span> Canvas(&#123;</span><br><span class="line">            id: <span class="string">"drawboard_main_canvas"</span>,</span><br><span class="line">            parentId: <span class="keyword">this</span>.parentId,</span><br><span class="line">        &#125;)</span><br><span class="line">        <span class="keyword">this</span>.mainCanvas = mainLayer.canvasElement</span><br><span class="line">        <span class="keyword">this</span>.mainCtx = mainLayer.canvasContext</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>实现矩形的绘制命令与其他图形类似，只不过传入的执行命令的上下文中，画布上下文对象ctx需要是ui层的ctx对象。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">RectDrawCommand</span> <span class="keyword">extends</span> <span class="title">Command</span> </span>&#123;</span><br><span class="line">  execute() &#123;</span><br><span class="line">    <span class="keyword">var</span> &#123;ctx, color, lineWidth, positions&#125; = <span class="keyword">this</span>.receiver</span><br><span class="line">    <span class="keyword">var</span> pos1 = positions[<span class="number">0</span>]</span><br><span class="line">    <span class="keyword">var</span> pos2 = positions[<span class="number">1</span>]</span><br><span class="line">    ctx.save()</span><br><span class="line">    ctx.strokeStyle = color</span><br><span class="line">    ctx.lineWidth = lineWidth</span><br><span class="line">    Graphic.drawRect(ctx, pos1, pos2)</span><br><span class="line">    ctx.restore()</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="文本框控件"><a href="#文本框控件" class="headerlink" title="文本框控件"></a>文本框控件</h3><p>我们希望实现一个文本框控件，当用户点击画布的时候，就会在点击的地方出现一个文本框，然后此时输入内容就会在文本框中出现。文本框上有一个确定和一个取消按钮，点击它们文本框会消失，不过点击确定文字会绘制到画布上，点击取消不会。</p>
+<p><img src="https://timothy-tianmu.github.io/blog/images/1567573557991.png" alt="1567573557991"></p>
+<p>与其他工具类一样，首先我们来实现一个TextTool继承自Tool类。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">TextTool</span> <span class="keyword">extends</span> <span class="title">Tool</span> </span>&#123;</span><br><span class="line">    <span class="keyword">constructor</span>(board) &#123;</span><br><span class="line">        <span class="keyword">super</span>(board)</span><br><span class="line">        <span class="keyword">this</span>.setupInput()</span><br><span class="line">        <span class="keyword">this</span>.setupTextarea()</span><br><span class="line">        <span class="keyword">this</span>.toolType = TEXT</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    setupInput() &#123;</span><br><span class="line">        <span class="comment">// 生成一个隐藏的输入框挂载到页面上</span></span><br><span class="line">        <span class="keyword">var</span> input = <span class="string">`&lt;textarea id="drawboard_input"&gt;`</span></span><br><span class="line">        <span class="keyword">this</span>.board.uiCanvas.insertAdjacentHTML(<span class="string">"afterend"</span>, input)</span><br><span class="line">        <span class="keyword">this</span>.input = <span class="built_in">document</span>.getElementById(<span class="string">"drawboard_input"</span>)</span><br><span class="line">        <span class="keyword">this</span>.input.blur()</span><br><span class="line"></span><br><span class="line">        <span class="keyword">this</span>.input.addEventListener(<span class="string">"input"</span>, () =&gt; &#123; </span><br><span class="line">            <span class="comment">// 没有在输入中文时，直接渲染到canvas文本框中</span></span><br><span class="line">            <span class="keyword">if</span> (!<span class="keyword">this</span>.onCompInput) &#123;</span><br><span class="line">                <span class="keyword">this</span>.onInput() </span><br><span class="line">            &#125;</span><br><span class="line">        &#125;)</span><br><span class="line">        <span class="keyword">this</span>.input.addEventListener(<span class="string">"compositionstart"</span>, () =&gt; &#123; </span><br><span class="line">            <span class="keyword">this</span>.onCompInput = <span class="literal">true</span></span><br><span class="line">        &#125;)</span><br><span class="line">        <span class="keyword">this</span>.input.addEventListener(<span class="string">"compositionend"</span>, () =&gt; &#123; </span><br><span class="line">            <span class="keyword">this</span>.onCompInput = <span class="literal">false</span></span><br><span class="line">            <span class="comment">// 输入一句中文完成时才渲染到文本框</span></span><br><span class="line">            <span class="keyword">this</span>.onInput()</span><br><span class="line">        &#125;)</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    setupTextarea() &#123;</span><br><span class="line">        <span class="keyword">this</span>.isTextareaDrawn = <span class="literal">false</span></span><br><span class="line">        <span class="keyword">this</span>.textareaPos = &#123;<span class="attr">x</span>:<span class="number">0</span>, <span class="attr">y</span>:<span class="number">0</span>&#125;</span><br><span class="line">        <span class="keyword">this</span>.btnW = <span class="number">50</span></span><br><span class="line">        <span class="keyword">this</span>.btnH = <span class="number">30</span></span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    onInput() &#123;</span><br><span class="line">        <span class="keyword">this</span>.value = <span class="keyword">this</span>.input.value</span><br><span class="line">        <span class="keyword">this</span>.clearUI()</span><br><span class="line">        <span class="keyword">this</span>.drawText(<span class="keyword">this</span>.board.uiCtx, <span class="keyword">this</span>.textareaPos, <span class="keyword">this</span>.value)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>可以看到我们创建了一个隐藏的文本框，并监听这个文本框的输入事件，当用户在键盘上输入时，触发事件，就会将文本框中的文本绘制到画布上的虚拟文本框中。由于用户可能输入的是中文，因此同时还需要监听一个compositionstart和compositionend事件，否则用户在输入中文的过程中文本框呈现的是英文而不是中文。</p>
+<p>技术难点在于将文本框中的文字绘制到虚拟文本框的算法，因为要根据文本框的宽度实现分行：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line">drawText(ctx, pos, text) &#123;</span><br><span class="line">    ctx.save()</span><br><span class="line">    ctx.font = <span class="string">`<span class="subst">$&#123;<span class="keyword">this</span>.board.fontSize&#125;</span>px sans-serif`</span>;</span><br><span class="line">    ctx.fillStyle = <span class="keyword">this</span>.board.color</span><br><span class="line">    <span class="keyword">var</span> lines = []</span><br><span class="line">    <span class="keyword">var</span> line = <span class="string">""</span></span><br><span class="line">    <span class="keyword">var</span> headIndex = <span class="number">0</span></span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">var</span> i = <span class="number">0</span>; i &lt; text.length; i++) &#123;</span><br><span class="line">        <span class="keyword">if</span> (text[i] === <span class="string">"\n"</span>) &#123;</span><br><span class="line">            lines.push(line)</span><br><span class="line">            headIndex = i + <span class="number">1</span></span><br><span class="line">            line = <span class="string">""</span></span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            line += text[i]</span><br><span class="line">            <span class="keyword">var</span> obj = ctx.measureText(line)</span><br><span class="line">            <span class="keyword">if</span> (obj.width &gt; (<span class="keyword">this</span>.board.textWidth)) &#123;</span><br><span class="line">                lines.push(text.substring(headIndex, i))</span><br><span class="line">                line = text[i]</span><br><span class="line">                headIndex = i</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> (line !== <span class="string">""</span>) &#123;</span><br><span class="line">        lines.push(line)</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">var</span> j = <span class="number">0</span>; j &lt; lines.length; j++) &#123;</span><br><span class="line">        <span class="keyword">if</span> ((j+<span class="number">1</span>)*<span class="keyword">this</span>.board.fontSize &lt; <span class="keyword">this</span>.board.textHeight) &#123;</span><br><span class="line">            ctx.fillText(lines[j], pos.x, pos.y + (j + <span class="number">1</span>) * <span class="keyword">this</span>.board.fontSize)</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>鼠标事件：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br></pre></td><td class="code"><pre><span class="line">finishInput() &#123;</span><br><span class="line">    <span class="keyword">this</span>.drawOn()</span><br><span class="line">    <span class="keyword">this</span>.clearUI()</span><br><span class="line">    <span class="keyword">this</span>.setCommand()</span><br><span class="line">    <span class="keyword">this</span>.input.value = <span class="string">""</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">onMouseDown(ev) &#123;</span><br><span class="line">    <span class="keyword">super</span>.onMouseDown(ev)</span><br><span class="line">    <span class="keyword">if</span> (!<span class="keyword">this</span>.isTextareaDrawn) &#123;</span><br><span class="line">        <span class="keyword">this</span>.drawTextarea(<span class="keyword">this</span>.mouseDownPos)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">onMouseMove(ev) &#123;</span><br><span class="line">    <span class="keyword">super</span>.onMouseMove(ev)</span><br><span class="line">    <span class="keyword">if</span> (!<span class="keyword">this</span>.isMouseDown) &#123;</span><br><span class="line">        <span class="keyword">return</span></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> (!<span class="keyword">this</span>.isTextareaDrawn) &#123;</span><br><span class="line">        <span class="keyword">this</span>.drawTextarea(<span class="keyword">this</span>.mouseMovePos)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">onMouseUp(ev) &#123;</span><br><span class="line">    <span class="keyword">super</span>.onMouseUp(ev)</span><br><span class="line">    <span class="keyword">if</span> (<span class="keyword">this</span>.outOfRange) <span class="keyword">return</span></span><br><span class="line">    <span class="keyword">if</span> (<span class="keyword">this</span>.isTextareaDrawn) &#123;</span><br><span class="line">        <span class="comment">// 点击文本框上的确定按钮时</span></span><br><span class="line">        <span class="keyword">if</span> (<span class="keyword">this</span>.isClicked &amp;&amp; <span class="keyword">this</span>.confirmInput(<span class="keyword">this</span>.mouseUpPos)) &#123;</span><br><span class="line">            <span class="keyword">this</span>.board.assistCtx.clearRect(<span class="number">0</span>, <span class="number">0</span>, <span class="keyword">this</span>.board.W, <span class="keyword">this</span>.board.H)</span><br><span class="line">            <span class="keyword">if</span> (<span class="keyword">this</span>.input.value !== <span class="string">""</span>) &#123;</span><br><span class="line">                <span class="comment">// 擦除文本框边界，完成输入</span></span><br><span class="line">                <span class="keyword">this</span>.finishInput()</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">this</span>.isTextareaDrawn = <span class="literal">false</span></span><br><span class="line">            <span class="keyword">return</span></span><br><span class="line">        <span class="comment">// 点击文本框上的取消按钮时</span></span><br><span class="line">        &#125; <span class="keyword">else</span> <span class="keyword">if</span> (<span class="keyword">this</span>.isClicked &amp;&amp; <span class="keyword">this</span>.cancelInput(<span class="keyword">this</span>.mouseUpPos)) &#123;</span><br><span class="line">            <span class="keyword">this</span>.board.assistCtx.clearRect(<span class="number">0</span>, <span class="number">0</span>, <span class="keyword">this</span>.board.W, <span class="keyword">this</span>.board.H)</span><br><span class="line">            <span class="keyword">this</span>.board.uiCtx.clearRect(<span class="number">0</span>, <span class="number">0</span>, <span class="keyword">this</span>.board.W, <span class="keyword">this</span>.board.H)</span><br><span class="line">            <span class="keyword">this</span>.input.value = <span class="string">""</span></span><br><span class="line">            <span class="keyword">this</span>.isTextareaDrawn = <span class="literal">false</span></span><br><span class="line">            <span class="keyword">return</span></span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            <span class="comment">// 在文本框绘制后的状况下，点击画布内部会聚焦到文本框</span></span><br><span class="line">            <span class="comment">// 此时用户输入会被绘制到文本框中</span></span><br><span class="line">            <span class="keyword">this</span>.input.focus()</span><br><span class="line">        &#125;</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="comment">// 文本框没有被绘制时，就绘制文本框</span></span><br><span class="line">        <span class="keyword">this</span>.textareaPos.x = <span class="keyword">this</span>.mouseUpPos.x</span><br><span class="line">        <span class="keyword">this</span>.textareaPos.y = <span class="keyword">this</span>.mouseUpPos.y</span><br><span class="line">        <span class="keyword">this</span>.drawTextarea(<span class="keyword">this</span>.textareaPos)</span><br><span class="line">        <span class="keyword">this</span>.isTextareaDrawn = <span class="literal">true</span></span><br><span class="line">        <span class="keyword">this</span>.input.focus()</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="事件分发系统"><a href="#事件分发系统" class="headerlink" title="事件分发系统"></a>事件分发系统</h3><p>因为我们整个页面被拆分成了不同的组件，而组件之间需要进行通信。比如右侧的参数调节板块，我们希望能够调节相应的控制条，就能够动态改变工具的参数，这就需要我们在调节控制条时将控制条数据传递给工具组件。我们通过实现一个事件分发系统来完成这个需求。</p>
+<p>即当调节控制条时，触发一个”input_change”事件，而工具类监听这个事件，并且通过传过来的数据动态改变当前工具的参数。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">EventBus</span> </span>&#123;</span><br><span class="line">  <span class="keyword">constructor</span>() &#123;</span><br><span class="line">    <span class="keyword">this</span>.events = <span class="keyword">new</span> <span class="built_in">Map</span>()</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  on(eventName, handler) &#123;</span><br><span class="line">    <span class="keyword">var</span> ev = <span class="keyword">this</span>.events.get(eventName)</span><br><span class="line">    <span class="keyword">if</span> (!ev) &#123;</span><br><span class="line">      <span class="keyword">this</span>.events.set(eventName, [handler])</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">      <span class="keyword">for</span> (<span class="keyword">var</span> h <span class="keyword">in</span> ev) &#123;</span><br><span class="line">        <span class="keyword">if</span> (h === handler) &#123;</span><br><span class="line">          <span class="keyword">return</span></span><br><span class="line">        &#125;</span><br><span class="line">      &#125;</span><br><span class="line">      ev.push(handler)</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  emit(eventName, args) &#123;</span><br><span class="line">    <span class="keyword">if</span> (<span class="keyword">this</span>.events.has(eventName)) &#123;</span><br><span class="line">      <span class="keyword">this</span>.events.get(eventName).forEach(<span class="function"><span class="params">h</span> =&gt;</span> &#123;</span><br><span class="line">        h(args)</span><br><span class="line">      &#125;);</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="built_in">window</span>.eventbus = <span class="keyword">new</span> EventBus()</span><br></pre></td></tr></table></figure>
+<p>在DrawBoard类中添加全局的监听事件：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">setupConfig() &#123;</span><br><span class="line">  <span class="keyword">this</span>.lineWidth = <span class="number">1</span></span><br><span class="line">  <span class="keyword">this</span>.color = <span class="string">"#000"</span></span><br><span class="line">  <span class="keyword">this</span>.textWidth = <span class="number">200</span></span><br><span class="line">  <span class="keyword">this</span>.textHeight = <span class="number">100</span></span><br><span class="line">  <span class="keyword">this</span>.fontSize = <span class="number">15</span> </span><br><span class="line">  <span class="keyword">this</span>.eraserSize = <span class="number">20</span></span><br><span class="line">  <span class="keyword">var</span> eb = <span class="built_in">window</span>.eventbus</span><br><span class="line">  eb.on(<span class="string">"board_line_width_change"</span>, (value) =&gt; &#123;<span class="keyword">this</span>.lineWidth = <span class="built_in">parseInt</span>(value)&#125;)</span><br><span class="line">  eb.on(<span class="string">"board_color_change"</span>, (value) =&gt; &#123;<span class="keyword">this</span>.color = value&#125;)</span><br><span class="line">  eb.on(<span class="string">"board_text_width_change"</span>, (value) =&gt; &#123; <span class="keyword">this</span>.textWidth = <span class="built_in">parseInt</span>(value) &#125;)</span><br><span class="line">  eb.on(<span class="string">"board_text_height_change"</span>, (value) =&gt; &#123; <span class="keyword">this</span>.textHeight = <span class="built_in">parseInt</span>(value) &#125;)</span><br><span class="line">  eb.on(<span class="string">"board_font_size_change"</span>, (value) =&gt; &#123;<span class="keyword">this</span>.fontSize = <span class="built_in">parseInt</span>(value)&#125;)</span><br><span class="line">  eb.on(<span class="string">"board_eraser_size_change"</span>, (value) =&gt; &#123;<span class="keyword">this</span>.eraserSize = <span class="built_in">parseInt</span>(value)&#125;)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/blog/tags/前端/" rel="tag"># 前端</a>
+          
+            <a href="/blog/tags/canvas/" rel="tag"># canvas</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/blog/2019/09/04/HTML5-Canvas应用实践（三）：构建雷霆战机游戏/" rel="next" title="HTML5-Canvas应用实践（三）：构建雷霆战机游戏">
+                <i class="fa fa-chevron-left"></i> HTML5-Canvas应用实践（三）：构建雷霆战机游戏
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+  </div>
+
+
+          </div>
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">木木</p>
+              <div class="site-description motion-element" itemprop="description">记录技术，学习笔记，生活感悟</div>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/blog/archives/">
+                
+                    <span class="site-state-item-count">6</span>
+                    <span class="site-state-item-name">日志</span>
+                  </a>
+                </div>
+              
+
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  
+                    
+                      <a href="/blog/tags/">
+                    
+                  
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">7</span>
+                    <span class="site-state-item-name">标签</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+
+          
+
+          
+            <div class="links-of-author motion-element">
+              
+                <span class="links-of-author-item">
+                  
+                  
+                    
+                  
+                  
+                    
+                  
+                  <a href="https://github.com/timothy-tianmu" title="GitHub &rarr; https://github.com/timothy-tianmu" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+                </span>
+              
+                <span class="links-of-author-item">
+                  
+                  
+                    
+                  
+                  
+                    
+                  
+                  <a href="mailto:tianmu_19970924@163.com" title="E-Mail &rarr; mailto:tianmu_19970924@163.com" rel="noopener" target="_blank"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                </span>
+              
+            </div>
+          
+
+          
+
+          
+          
+
+          
+            
+          
+          
+
+        </div>
+      </div>
+
+      
+      <!--noindex-->
+        <div class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+            
+            
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#HTML5-Canvas应用实践（四）：构建画板应用"><span class="nav-number">1.</span> <span class="nav-text">HTML5 Canvas应用实践（四）：构建画板应用</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#项目技术要点："><span class="nav-number">1.1.</span> <span class="nav-text">项目技术要点：</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#实现通用方法"><span class="nav-number">1.1.1.</span> <span class="nav-text">实现通用方法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#工具列表："><span class="nav-number">1.1.2.</span> <span class="nav-text">工具列表：</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#命令模式："><span class="nav-number">1.1.3.</span> <span class="nav-text">命令模式：</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#自由画笔工具："><span class="nav-number">1.1.4.</span> <span class="nav-text">自由画笔工具：</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#矩形工具："><span class="nav-number">1.1.5.</span> <span class="nav-text">矩形工具：</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#文本框控件"><span class="nav-number">1.1.6.</span> <span class="nav-text">文本框控件</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#事件分发系统"><span class="nav-number">1.1.7.</span> <span class="nav-text">事件分发系统</span></a></li></ol></li></ol></li></ol></div>
+            
+
+          </div>
+        </div>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+  
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-snowflake-o"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">木木</span>
+
+  
+
+  
+</div>
+
+
+
+
+
+
+
+
+
+        
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+    
+
+    
+  </div>
+
+  
+
+<script>
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+    
+    
+      
+    
+  
+  <script color="0,0,255" opacity="0.5" zindex="-1" count="99" src="//cdn.jsdelivr.net/gh/theme-next/theme-next-canvas-nest@1/canvas-nest.min.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script src="/blog/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script src="/blog/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script src="/blog/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+
+  
+
+
+  <script src="/blog/js/utils.js?v=7.1.0"></script>
+
+  <script src="/blog/js/motion.js?v=7.1.0"></script>
+
+
+
+  
+  
+
+
+  <script src="/blog/js/affix.js?v=7.1.0"></script>
+
+  <script src="/blog/js/schemes/pisces.js?v=7.1.0"></script>
+
+
+
+
+  
+  <script src="/blog/js/scrollspy.js?v=7.1.0"></script>
+<script src="/blog/js/post-details.js?v=7.1.0"></script>
+
+
+
+  
+
+
+  <script src="/blog/js/next-boot.js?v=7.1.0"></script>
+
+
+  
+
+  
+
+  
+
+  
+
+
+  
+
+
+  
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

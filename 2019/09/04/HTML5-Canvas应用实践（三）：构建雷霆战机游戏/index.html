@@ -1,0 +1,866 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-CN">
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/blog/lib/font-awesome/css/font-awesome.min.css?v=4.6.2">
+
+<link rel="stylesheet" href="/blog/css/main.css?v=7.1.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/blog/images/apple-touch-icon.png?v=7.1.0">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/blog/images/favicon-32x32.png?v=7.1.0">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/blog/images/favicon-16x16.png?v=7.1.0">
+
+
+
+
+
+
+
+
+<script id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/blog/',
+    scheme: 'Gemini',
+    version: '7.1.0',
+    sidebar: {"position":"left","display":"post","offset":12,"onmobile":false,"dimmer":false},
+    back2top: true,
+    back2top_sidebar: false,
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":true,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  <meta name="description" content="HTML5 Canvas应用实践（三）：构建雷霆战机游戏之前的文章中我们搭建了一个渲染框架，能够支持键盘事件分发以及动画循环等等，现在我们使用canvas创建的游戏也要应用到上述的技术，不过需要更多的功能支持，因此我们将从头开始构建一个游戏的框架。 项目预览地址：https://timothy-tianmu.github.io/blog/projects/plane-war/index.html">
+<meta name="keywords" content="前端,canvas,游戏">
+<meta property="og:type" content="article">
+<meta property="og:title" content="HTML5-Canvas应用实践（三）：构建雷霆战机游戏">
+<meta property="og:url" content="https://timothy-tianmu.github.io/blog/2019/09/04/HTML5-Canvas应用实践（三）：构建雷霆战机游戏/index.html">
+<meta property="og:site_name" content="马猴实验室">
+<meta property="og:description" content="HTML5 Canvas应用实践（三）：构建雷霆战机游戏之前的文章中我们搭建了一个渲染框架，能够支持键盘事件分发以及动画循环等等，现在我们使用canvas创建的游戏也要应用到上述的技术，不过需要更多的功能支持，因此我们将从头开始构建一个游戏的框架。 项目预览地址：https://timothy-tianmu.github.io/blog/projects/plane-war/index.html">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2019-09-04T08:31:23.871Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="HTML5-Canvas应用实践（三）：构建雷霆战机游戏">
+<meta name="twitter:description" content="HTML5 Canvas应用实践（三）：构建雷霆战机游戏之前的文章中我们搭建了一个渲染框架，能够支持键盘事件分发以及动画循环等等，现在我们使用canvas创建的游戏也要应用到上述的技术，不过需要更多的功能支持，因此我们将从头开始构建一个游戏的框架。 项目预览地址：https://timothy-tianmu.github.io/blog/projects/plane-war/index.html">
+
+
+
+
+
+  
+  
+  <link rel="canonical" href="https://timothy-tianmu.github.io/blog/2019/09/04/HTML5-Canvas应用实践（三）：构建雷霆战机游戏/">
+
+
+
+<script id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>HTML5-Canvas应用实践（三）：构建雷霆战机游戏 | 马猴实验室</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .motion-element,
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-title { opacity: initial; }
+
+  .use-motion .logo,
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/blog/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">马猴实验室</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+    
+      
+        <p class="site-subtitle">相信的心就是你的魔法</p>
+      
+    
+    
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="切换导航栏">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+        
+          
+          <li class="menu-item menu-item-home">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/blog/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i> <br>首页</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-tags">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/blog/tags/" rel="section"><i class="menu-item-icon fa fa-fw fa-tags"></i> <br>标签</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-categories">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/blog/categories/" rel="section"><i class="menu-item-icon fa fa-fw fa-th"></i> <br>分类</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-archives">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/blog/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br>归档</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-个人项目">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/blog/projects/" rel="section"><i class="menu-item-icon fa fa-fw fa-user"></i> <br>个人项目</a>
+
+  </li>
+
+      
+      
+    </ul>
+  
+
+  
+
+  
+</nav>
+
+
+
+  
+
+
+
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+            
+
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://timothy-tianmu.github.io/blog/blog/2019/09/04/HTML5-Canvas应用实践（三）：构建雷霆战机游戏/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="木木">
+      <meta itemprop="description" content="记录技术，学习笔记，生活感悟">
+      <meta itemprop="image" content="/blog/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="马猴实验室">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">HTML5-Canvas应用实践（三）：构建雷霆战机游戏
+
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-09-04 16:15:56 / 修改时间：16:31:23" itemprop="dateCreated datePublished" datetime="2019-09-04T16:15:56+08:00">2019-09-04</time>
+            
+
+            
+              
+
+              
+            
+          </span>
+
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="HTML5-Canvas应用实践（三）：构建雷霆战机游戏"><a href="#HTML5-Canvas应用实践（三）：构建雷霆战机游戏" class="headerlink" title="HTML5 Canvas应用实践（三）：构建雷霆战机游戏"></a>HTML5 Canvas应用实践（三）：构建雷霆战机游戏</h1><p>之前的文章中我们搭建了一个渲染框架，能够支持键盘事件分发以及动画循环等等，现在我们使用canvas创建的游戏也要应用到上述的技术，不过需要更多的功能支持，因此我们将从头开始构建一个游戏的框架。</p>
+<p>项目预览地址：<a href="https://timothy-tianmu.github.io/blog/projects/plane-war/index.html">https://timothy-tianmu.github.io/blog/projects/plane-war/index.html</a></p>
+<h2 id="游戏循环和资源加载"><a href="#游戏循环和资源加载" class="headerlink" title="游戏循环和资源加载"></a>游戏循环和资源加载</h2><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Game</span> </span>&#123;</span><br><span class="line">    <span class="keyword">constructor</span>(imgPaths) &#123;</span><br><span class="line">        <span class="keyword">this</span>.canvas = <span class="built_in">document</span>.querySelector(<span class="string">'#id-canvas'</span>)</span><br><span class="line">        <span class="keyword">this</span>.context = <span class="keyword">this</span>.canvas.getContext(<span class="string">'2d'</span>)</span><br><span class="line">        <span class="keyword">this</span>.imgPaths = imgPaths</span><br><span class="line">        <span class="keyword">this</span>.imgs = &#123;&#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    drawImage(image) &#123;</span><br><span class="line">        <span class="keyword">this</span>.context.drawImage(image.img, image.x, image.y)</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    imageByName(name) &#123;</span><br><span class="line">        <span class="keyword">var</span> img = <span class="keyword">this</span>.imgs[name]</span><br><span class="line">        <span class="keyword">return</span> &#123;</span><br><span class="line">            x: <span class="number">0</span>,</span><br><span class="line">            y: <span class="number">0</span>,</span><br><span class="line">            width: img.width,</span><br><span class="line">            height: img.height,</span><br><span class="line">            img: img,</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    init() &#123;</span><br><span class="line">        <span class="keyword">var</span> g = <span class="keyword">this</span></span><br><span class="line">        <span class="keyword">var</span> imgNames = <span class="built_in">Object</span>.keys(g.imgPaths)</span><br><span class="line">        <span class="comment">// 加载了几个资源</span></span><br><span class="line">        <span class="keyword">var</span> numOfLoadedImgs = <span class="number">0</span></span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">var</span> i = <span class="number">0</span>; i &lt; imgNames.length; i++) &#123;</span><br><span class="line">            <span class="keyword">let</span> name = imgNames[i]</span><br><span class="line">            <span class="keyword">let</span> img = <span class="keyword">new</span> Image()</span><br><span class="line">            img.src = g.imgPaths[name]</span><br><span class="line">            img.onload = <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">                g.imgs[name] = img</span><br><span class="line">                numOfLoadedImgs += <span class="number">1</span></span><br><span class="line">                <span class="keyword">if</span> (numOfLoadedImgs == imgNames.length) &#123;</span><br><span class="line">                    <span class="comment">// 资源加载完成之后开始游戏循环</span></span><br><span class="line">                    g.start()</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    draw() &#123;</span><br><span class="line">        <span class="keyword">this</span>.drawImage(<span class="keyword">this</span>.imageByName(<span class="string">"bg"</span>))</span><br><span class="line">        <span class="keyword">this</span>.drawImage(<span class="keyword">this</span>.imageByName(<span class="string">"player"</span>))</span><br><span class="line">        <span class="keyword">this</span>.drawImage(<span class="keyword">this</span>.imageByName(<span class="string">"enemy"</span>))</span><br><span class="line">    &#125;</span><br><span class="line">    update() &#123;&#125;</span><br><span class="line">    </span><br><span class="line">    loop() &#123;</span><br><span class="line">        <span class="keyword">this</span>.draw()</span><br><span class="line">        <span class="keyword">this</span>.update()</span><br><span class="line">        requestAnimationFrame(<span class="keyword">this</span>.loop.bind(<span class="keyword">this</span>))</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    start() &#123;</span><br><span class="line">        <span class="keyword">this</span>.loop()</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> main = <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">    <span class="keyword">var</span> imgPaths = &#123;</span><br><span class="line">        player: <span class="string">"img/player.png"</span>,</span><br><span class="line">        enemy: <span class="string">"img/enemy.png"</span>,</span><br><span class="line">        bg: <span class="string">"img/bg.jpg"</span>,</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">var</span> game = <span class="keyword">new</span> Game(imgPaths)</span><br><span class="line">    game.init()</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">main()</span><br></pre></td></tr></table></figure>
+<p>首先我们需要先将游戏中的图片资源载入，然后才能够绘制到canvas中，或者与玩家进行交互。注意我们只需要一次性将所有需要的图片载入，之后需要到图片的地方直接将图片绘制到屏幕上即可，而不需要每次使用都重复载入图片。</p>
+<p>载入图片的主要代码在init函数中，需要注意的有两点，第一点是for循环，在这个循环中，我们主要是遍历imgPaths这个包含所有图片资源名和图片路径名的键值对的对象，并且创建一个包含图片资源名和图片对象键值对的对象。因此每轮循环，我们都会创建一个image对象，并在image对象的onload回调函数中将image对象赋值给相应的图片名。我们使用let来声明img变量，这是因为这个变量要用于循环中定义的一个函数中，如果使用var将会导致循环所定义的所有函数都将共享这个变量，而onload回调函数不会立即被执行，最后只载入了最后载入的图片。</p>
+<p>第二点是我们需要在所有图片载入完成之后才能开始其它的代码，但是JavaScript载入图片的过程是异步的，也就是它会继续运行之后的代码，因此我们需要在img.onload（图片载入完成）事件触发的回调函数中判断自己是否是载入的最后一张图片，如果是再开始主程序。上面我们是使用一个变量numOfLoadedImgs来记录当前是第几个加载完成的图片，将这个变量与图片总数进行比较。</p>
+<p>当然我们也可以用更优雅的方式，即ES6中提供的Promise解决方案来改写init方法：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">init() &#123;</span><br><span class="line">    <span class="keyword">var</span> g = <span class="keyword">this</span></span><br><span class="line">    <span class="keyword">var</span> imgNames = <span class="built_in">Object</span>.keys(g.imgPaths)</span><br><span class="line">    <span class="keyword">var</span> loadedImgPromises = []</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">var</span> i = <span class="number">0</span>; i &lt; imgNames.length; i++) &#123;</span><br><span class="line">        <span class="keyword">let</span> name = imgNames[i]</span><br><span class="line">        <span class="keyword">let</span> img = <span class="keyword">new</span> Image()</span><br><span class="line">        img.src = g.imgPaths[name]</span><br><span class="line">        <span class="comment">// 创建一个Promise对象，Promise中执行图片加载的代码</span></span><br><span class="line">        <span class="comment">// 当图片加载成功后会将Promise状态设置为fulfilled</span></span><br><span class="line">        <span class="keyword">let</span> imgLoaded = <span class="keyword">new</span> <span class="built_in">Promise</span>(<span class="function">(<span class="params">resolve, reject</span>) =&gt;</span> &#123;</span><br><span class="line">            img.onload = <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">                g.imgs[name] = img</span><br><span class="line">                resolve()</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;)</span><br><span class="line">        <span class="comment">// 将所有图片加载的Promise存到一个数组中</span></span><br><span class="line">        loadedImgPromises.push(imgLoaded)</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// 所有Promise状态都是fulfilled时，触发传入then的回调函数</span></span><br><span class="line">    <span class="built_in">Promise</span>.all(loadedImgPromises).then(<span class="function"><span class="params">()</span> =&gt;</span> g.start())</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="游戏精灵"><a href="#游戏精灵" class="headerlink" title="游戏精灵"></a>游戏精灵</h2><p>游戏当中我们可以将所有的事物看作对象，提取所有这些对象的共同特征，并定义为抽象基类，这样我们就可以在定义新对象时继承基类，减少重复代码，且使程序具有可扩展性。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Sprite</span> </span>&#123;</span><br><span class="line">    <span class="keyword">constructor</span>(game, image) &#123;</span><br><span class="line">        <span class="keyword">this</span>.x = <span class="number">0</span></span><br><span class="line">        <span class="keyword">this</span>.y = <span class="number">0</span></span><br><span class="line">        <span class="keyword">this</span>.width = image.width</span><br><span class="line">        <span class="keyword">this</span>.height = image.height</span><br><span class="line">        <span class="keyword">this</span>.game = game</span><br><span class="line">        <span class="keyword">this</span>.image = image</span><br><span class="line">        <span class="keyword">this</span>.exists = <span class="literal">true</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    draw() &#123;</span><br><span class="line">        <span class="keyword">this</span>.image.x = <span class="keyword">this</span>.x</span><br><span class="line">        <span class="keyword">this</span>.image.y = <span class="keyword">this</span>.y</span><br><span class="line">        <span class="keyword">this</span>.game.drawImage(<span class="keyword">this</span>.image)</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    update() &#123;</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>游戏精灵的基类只是简单地将图片资源对象以及管理游戏的总对象进行了一下封装，还提供了这个精灵在画布上的坐标。每个精灵管理提供自己的draw方法，即Game类中的draw只是单纯地调用每个精灵自己的draw方法，这样可以让Game类不用关心具体的绘制方法，只需要将细节交给具体的精灵对象，从而达到游戏与具体的精灵对象解耦。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Enemy</span> <span class="keyword">extends</span> <span class="title">Sprite</span> </span>&#123;</span><br><span class="line">    <span class="keyword">constructor</span>(game, image) &#123;</span><br><span class="line">        <span class="keyword">super</span>(game, image)</span><br><span class="line">        <span class="keyword">this</span>.x = rangeBetween(<span class="number">0</span>, game.canvas.width - <span class="keyword">this</span>.width)</span><br><span class="line">        <span class="keyword">this</span>.speed = config.enemy_speed</span><br><span class="line">        <span class="keyword">this</span>.direction = (<span class="built_in">Math</span>.random() * <span class="number">2</span> - <span class="number">1</span>) &gt; <span class="number">0</span> ? <span class="number">1</span> : <span class="number">-1</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    update() &#123;</span><br><span class="line">        <span class="keyword">this</span>.speed = config.enemy_speed</span><br><span class="line">        <span class="keyword">this</span>.y += <span class="keyword">this</span>.speed</span><br><span class="line">        <span class="keyword">this</span>.x += <span class="keyword">this</span>.speed * <span class="keyword">this</span>.direction</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Player</span> <span class="keyword">extends</span> <span class="title">Sprite</span> </span>&#123;</span><br><span class="line">    <span class="keyword">constructor</span>(game, image) &#123;</span><br><span class="line">        <span class="keyword">super</span>(game, image)</span><br><span class="line">        <span class="keyword">this</span>.x = game.canvas.width / <span class="number">2</span> - image.width / <span class="number">2</span></span><br><span class="line">        <span class="keyword">this</span>.y = game.canvas.height - image.height</span><br><span class="line">        <span class="keyword">this</span>.speed = config.player_speed</span><br><span class="line">        <span class="keyword">this</span>.setupActions()</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    setupActions() &#123;</span><br><span class="line">        <span class="keyword">var</span> p = <span class="keyword">this</span></span><br><span class="line">        p.game.registerAction(<span class="string">"a"</span>, <span class="function"><span class="keyword">function</span>(<span class="params">event</span>) </span>&#123;</span><br><span class="line">            p.moveLeft()</span><br><span class="line">        &#125;)</span><br><span class="line">        p.game.registerAction(<span class="string">"d"</span>, <span class="function"><span class="keyword">function</span>(<span class="params">event</span>) </span>&#123;</span><br><span class="line">            p.moveRight()</span><br><span class="line">        &#125;)</span><br><span class="line">        p.game.registerAction(<span class="string">"w"</span>, <span class="function"><span class="keyword">function</span>(<span class="params">event</span>) </span>&#123;</span><br><span class="line">            p.moveUp()</span><br><span class="line">        &#125;)</span><br><span class="line">        p.game.registerAction(<span class="string">"s"</span>, <span class="function"><span class="keyword">function</span>(<span class="params">event</span>) </span>&#123;</span><br><span class="line">            p.moveDown()</span><br><span class="line">        &#125;)</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    update() &#123;</span><br><span class="line">        <span class="keyword">this</span>.speed = config.player_speed</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    moveLeft() &#123;</span><br><span class="line">        <span class="keyword">this</span>.x -= <span class="keyword">this</span>.speed</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    moveRight() &#123;</span><br><span class="line">        <span class="keyword">this</span>.x += <span class="keyword">this</span>.speed</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    moveUp() &#123;</span><br><span class="line">        <span class="keyword">this</span>.y -= <span class="keyword">this</span>.speed</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    moveDown() &#123;</span><br><span class="line">        <span class="keyword">this</span>.y += <span class="keyword">this</span>.speed</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>具体的游戏精灵还会实现具体的update逻辑，在每一轮游戏循环中更新自己的状态，最基本的状态就是自己所处的坐标位置。在Enemy类中，敌军的飞船的坐标在每一帧都会加上自己的每帧的运动速度。</p>
+<h2 id="场景管理"><a href="#场景管理" class="headerlink" title="场景管理"></a>场景管理</h2><p>游戏对象之间会有一些交互，比如子弹碰撞到敌军，玩家碰撞到敌军会产生不同的结果，如果我们在这些游戏对象的类中写这些交互，会让游戏对象之间相互耦合，即当我们管理某个对象的代码时，还需要考虑另一个对象的逻辑。因此我们j将使用中介者模式，建立一个总的管理对象来作为游戏对象之间的中介，每个游戏对象想跟另一个对象进行交互，都只需要通知管理，然后由管理对象分发具体的任务给其他对象。这个管理对象我们称之为场景类，一个游戏可能会切换多个场景，不同场景下有不同的游戏对象与交互（如开始场景、结束场景、暂停场景等等}。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Scene</span> </span>&#123;</span><br><span class="line">    <span class="keyword">constructor</span>(game) &#123;</span><br><span class="line">        <span class="keyword">this</span>.game = game</span><br><span class="line">        <span class="keyword">this</span>.sceneName = <span class="string">""</span></span><br><span class="line">        <span class="keyword">this</span>.elements = []</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">static</span> <span class="keyword">new</span>(game) &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> <span class="keyword">this</span>(game)</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    addElement(elem) &#123;</span><br><span class="line">        <span class="keyword">this</span>.elements.push(elem)</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    update() &#123;</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">var</span> e <span class="keyword">of</span> <span class="keyword">this</span>.elements) &#123;</span><br><span class="line">            e.update()</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    draw() &#123;</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">var</span> e <span class="keyword">of</span> <span class="keyword">this</span>.elements) &#123;</span><br><span class="line">            e.draw()</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    clear() &#123;</span><br><span class="line">        <span class="keyword">this</span>.elements = <span class="keyword">this</span>.elements.filter(<span class="function"><span class="params">e</span> =&gt;</span> e.exists)</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 碰撞监测</span></span><br><span class="line">    isSquareCollide(x1, y1, w1, h1, x2, y2, w2, h2) &#123;</span><br><span class="line">        <span class="keyword">var</span> minX = x1 &lt;= x2 ? x1 : x2</span><br><span class="line">        <span class="keyword">var</span> maxX = x1 + w1 &lt;= x2 + w2 ? x2 + w2 : x1 + w1</span><br><span class="line">        <span class="keyword">var</span> minY = y1 &lt;= y2 ? y1 : y2</span><br><span class="line">        <span class="keyword">var</span> maxY = y1 + h1 &lt;= y2 + h2 ? y2 + h2 : y1 + h1</span><br><span class="line">        <span class="keyword">return</span> (maxX - minX &lt;= w1 + w2) &amp;&amp; (maxY - minY &lt;= h1 + h2)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这是我们建立的一个基类，我们通过维护一个elements属性的数组来保存所有需要管理的游戏对象，之后如果我们需要添加任何需要管理的对象，只需要调用addElement方法将该对象添加到待管理的列表中即可。</p>
+<p>在基类中，我们将场景的更新以及绘制仅仅实现为调用所有游戏对象自身的更新以及绘制方法，不过之后我们继承的类中可能会在此基础上添加一些交互代码。</p>
+<p>sceneName属性用于切换当前的场景，我们应该在game类中的update的代码中随时监测该属性，并根据该属性切换场景对象：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Game</span> </span>&#123;</span><br><span class="line">    <span class="keyword">constructor</span>(imgPaths) &#123;</span><br><span class="line">        <span class="keyword">this</span>.scene = <span class="literal">null</span></span><br><span class="line">        <span class="keyword">this</span>.scenes = &#123;</span><br><span class="line">            <span class="string">"game"</span>: GameScene,</span><br><span class="line">            <span class="string">"end"</span>: EndScene,</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">this</span>.currentSceneName = <span class="string">"game"</span></span><br><span class="line">    &#125;</span><br><span class="line">        </span><br><span class="line">    update() &#123;</span><br><span class="line">        <span class="keyword">if</span> (<span class="keyword">this</span>.scene.sceneName != <span class="keyword">this</span>.currentSceneName) &#123;</span><br><span class="line">            <span class="keyword">this</span>.scene = <span class="keyword">this</span>.scenes[<span class="keyword">this</span>.currentSceneName].new(<span class="keyword">this</span>)</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">this</span>.scene.update()</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>以下是游戏场景的类：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">GameScene</span> <span class="keyword">extends</span> <span class="title">Scene</span> </span>&#123;</span><br><span class="line">    <span class="keyword">constructor</span>(game) &#123;</span><br><span class="line">        <span class="keyword">super</span>(game)</span><br><span class="line">        <span class="keyword">this</span>.sceneName = <span class="string">"game"</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    init() &#123;</span><br><span class="line">        <span class="keyword">var</span> enemyCount = config.enemy_count</span><br><span class="line">        <span class="keyword">var</span> yRange = enemyCount * <span class="number">100</span></span><br><span class="line">        <span class="comment">// 随机创建敌机游戏对象</span></span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">var</span> i = <span class="number">0</span>; i &lt; enemyCount; i++) &#123;</span><br><span class="line">            <span class="keyword">var</span> e = <span class="keyword">new</span> Enemy(<span class="keyword">this</span>.game, <span class="keyword">this</span>.game.imageByName(<span class="string">"enemy"</span> + rangeBetween(<span class="number">0</span>, <span class="number">5</span>)))</span><br><span class="line">            e.y = <span class="built_in">Math</span>.random() * yRange * (<span class="number">-1</span>)</span><br><span class="line">            <span class="comment">// 添加对象到管理数组</span></span><br><span class="line">            <span class="keyword">this</span>.addElement(e)</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">this</span>.player = <span class="keyword">new</span> Player(<span class="keyword">this</span>.game, <span class="keyword">this</span>.game.imageByName(<span class="string">"player"</span>))</span><br><span class="line">        <span class="keyword">this</span>.addElement(<span class="keyword">this</span>.player)</span><br><span class="line">        <span class="comment">// 子弹冷却时间</span></span><br><span class="line">        <span class="keyword">this</span>.bulletCoolDownTime = <span class="number">10</span></span><br><span class="line">        <span class="keyword">this</span>.bulletCoolDown = <span class="keyword">this</span>.bulletCoolDownTime</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    borderCheck(elem) &#123;</span><br><span class="line">        <span class="comment">// 玩家不能超出屏幕边界</span></span><br><span class="line">        <span class="keyword">if</span> (elem <span class="keyword">instanceof</span> Player) &#123;</span><br><span class="line">            <span class="keyword">if</span> (elem.x &lt; <span class="number">0</span>) &#123;</span><br><span class="line">                elem.x = <span class="number">0</span></span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">if</span> (elem.y &lt; <span class="number">0</span>) &#123;</span><br><span class="line">                elem.y = <span class="number">0</span></span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">if</span> (elem.x + elem.width &gt; <span class="keyword">this</span>.game.canvas.width) &#123;</span><br><span class="line">                elem.x = <span class="keyword">this</span>.game.canvas.width - elem.width</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">if</span> (elem.y + elem.height &gt;= <span class="keyword">this</span>.game.canvas.height) &#123;</span><br><span class="line">                elem.y = <span class="keyword">this</span>.game.canvas.height - elem.height</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">// 子弹超出屏幕边界后从数组中移除，节省内存</span></span><br><span class="line">        <span class="keyword">if</span> (elem <span class="keyword">instanceof</span> Bullet) &#123;</span><br><span class="line">            <span class="keyword">if</span> (elem.y + elem.height &lt;= <span class="number">0</span>) &#123;</span><br><span class="line">                elem.exists = <span class="literal">false</span></span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    collision() &#123;</span><br><span class="line">        <span class="keyword">var</span> len = <span class="keyword">this</span>.elements.length</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">var</span> i = <span class="number">0</span>; i &lt; len; i++) &#123;</span><br><span class="line">            <span class="comment">// 遍历管理的所有对象</span></span><br><span class="line">            <span class="keyword">var</span> b = <span class="keyword">this</span>.elements[i]</span><br><span class="line">            <span class="keyword">if</span> (b <span class="keyword">instanceof</span> Bullet) &#123;</span><br><span class="line">                <span class="comment">// 遍历除了这个子弹之外的所有对象</span></span><br><span class="line">                <span class="comment">// 查看子弹是否与敌机碰撞</span></span><br><span class="line">                <span class="keyword">for</span> (<span class="keyword">var</span> j = <span class="number">0</span>; j &lt; len; j++) &#123;</span><br><span class="line">                    <span class="keyword">var</span> e = <span class="keyword">this</span>.elements[j]</span><br><span class="line">                    <span class="keyword">if</span> (j != i</span><br><span class="line">                        &amp;&amp; e <span class="keyword">instanceof</span> Enemy</span><br><span class="line">                        &amp;&amp; e.y + e.height &gt; <span class="number">0</span></span><br><span class="line">                        &amp;&amp; <span class="keyword">this</span>.isSquareCollide(b.x, b.y, b.width, b.height, e.x, e.y, e.width, e.height)) &#123;</span><br><span class="line">                        b.exists = <span class="literal">false</span></span><br><span class="line">                        e.exists = <span class="literal">false</span></span><br><span class="line">                        <span class="comment">// 释放爆炸的粒子特效</span></span><br><span class="line">                        <span class="keyword">this</span>.explode(e.x + e.width / <span class="number">2</span>, e.y + e.height / <span class="number">2</span>)</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">var</span> p = <span class="keyword">this</span>.player</span><br><span class="line">        <span class="comment">// 判断玩家是否与敌机碰撞</span></span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">var</span> e <span class="keyword">of</span> <span class="keyword">this</span>.elements) &#123;</span><br><span class="line">            <span class="keyword">if</span> (e <span class="keyword">instanceof</span> Enemy</span><br><span class="line">                &amp;&amp; <span class="keyword">this</span>.isSquareCollide(p.x, p.y, p.width, p.height, e.x, e.y, e.width, e.height)) &#123;</span><br><span class="line">                <span class="keyword">this</span>.game.currentScene = <span class="string">"interface"</span></span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    explode(x, y) &#123;</span><br><span class="line">        <span class="keyword">var</span> images = []</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">var</span> i = <span class="number">0</span>; i &lt; <span class="number">3</span>; i++) &#123;</span><br><span class="line">            images.push(<span class="keyword">this</span>.game.imageByName(<span class="string">"sparticle"</span> + i))</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">var</span> sp = <span class="keyword">new</span> SparticleSystem(<span class="keyword">this</span>.game, images, x, y)</span><br><span class="line">        <span class="keyword">this</span>.addElement(sp)</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    updateBullets() &#123;</span><br><span class="line">        <span class="keyword">if</span> (<span class="keyword">this</span>.bulletCoolDown &gt; <span class="number">0</span>) &#123;</span><br><span class="line">            <span class="keyword">this</span>.bulletCoolDown -= <span class="number">1</span></span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            <span class="keyword">var</span> bullet = <span class="keyword">new</span> Bullet(<span class="keyword">this</span>.game, <span class="keyword">this</span>.game.imageByName(<span class="string">"bullet"</span>))</span><br><span class="line">            bullet.x = <span class="keyword">this</span>.player.x + <span class="keyword">this</span>.player.width / <span class="number">2</span></span><br><span class="line">            bullet.y = <span class="keyword">this</span>.player.y - bullet.height</span><br><span class="line">            <span class="keyword">this</span>.addElement(bullet)</span><br><span class="line">            <span class="keyword">this</span>.bulletCoolDown = <span class="keyword">this</span>.bulletCoolDownTime</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    updateSparticles() &#123;</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">var</span> e <span class="keyword">of</span> <span class="keyword">this</span>.elements) &#123;</span><br><span class="line">            <span class="keyword">if</span> (e <span class="keyword">instanceof</span> SparticleSystem) &#123;</span><br><span class="line">                <span class="keyword">if</span> (e.sparticles.length == <span class="number">0</span>) &#123;</span><br><span class="line">                    e.exists = <span class="literal">false</span></span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    update() &#123;</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">let</span> e <span class="keyword">of</span> <span class="keyword">this</span>.elements) &#123;</span><br><span class="line">            e.update()</span><br><span class="line">            <span class="keyword">this</span>.borderCheck(e)</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">this</span>.updateBullets()</span><br><span class="line">        <span class="keyword">this</span>.collision()</span><br><span class="line">        <span class="keyword">this</span>.updateSparticles()</span><br><span class="line">        <span class="keyword">this</span>.clear()</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>可以看到我们在构造函数中就将场景中需要的所有对象添加到elements数组中，其中我们会将一些主要对象或是之后需要交互的对象作为属性管理起来，然后在update中检测碰撞。</p>
+<p>粒子系统：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Sparticle</span> <span class="keyword">extends</span> <span class="title">Sprite</span> </span>&#123;</span><br><span class="line">    <span class="keyword">constructor</span>(game, image, x, y) &#123;</span><br><span class="line">        <span class="keyword">super</span>(game, image)</span><br><span class="line">        <span class="keyword">this</span>.x = x</span><br><span class="line">        <span class="keyword">this</span>.y = y</span><br><span class="line">        <span class="comment">// X、Y的速度初始值为-5~5的随机值</span></span><br><span class="line">        <span class="keyword">this</span>.speedX = rangeBetween(<span class="number">-5</span>, <span class="number">6</span>)</span><br><span class="line">        <span class="keyword">this</span>.speedY = rangeBetween(<span class="number">-5</span>, <span class="number">6</span>)</span><br><span class="line">        <span class="comment">// 向下的加速度</span></span><br><span class="line">        <span class="keyword">this</span>.gravity = <span class="number">5</span></span><br><span class="line">        <span class="keyword">this</span>.life = <span class="number">10</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    update() &#123;</span><br><span class="line">        <span class="keyword">this</span>.life -= <span class="number">1</span></span><br><span class="line">        <span class="keyword">this</span>.x += <span class="keyword">this</span>.speedX</span><br><span class="line">        <span class="comment">// 每帧下落的速度都会加上加速度</span></span><br><span class="line">        <span class="comment">// y坐标则加上速度的值</span></span><br><span class="line">        <span class="keyword">this</span>.y += (<span class="keyword">this</span>.speedY + <span class="keyword">this</span>.gravity)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">SparticleSystem</span> </span>&#123;</span><br><span class="line">    <span class="keyword">constructor</span>(game, images, x, y) &#123;</span><br><span class="line">        <span class="keyword">this</span>.x = x</span><br><span class="line">        <span class="keyword">this</span>.y = y</span><br><span class="line">        <span class="keyword">this</span>.game = game</span><br><span class="line">        <span class="keyword">this</span>.images = images</span><br><span class="line">        <span class="keyword">this</span>.sparticles = []</span><br><span class="line">        <span class="keyword">this</span>.num = config.sparticle_num</span><br><span class="line">        <span class="keyword">this</span>.exists = <span class="literal">true</span></span><br><span class="line">        <span class="keyword">this</span>.init()</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    init() &#123;</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">var</span> i = <span class="number">0</span>; i &lt; <span class="keyword">this</span>.num; i++) &#123;</span><br><span class="line">            <span class="keyword">var</span> index = rangeBetween(<span class="number">0</span>, <span class="number">3</span>)</span><br><span class="line">            <span class="keyword">var</span> sp = <span class="keyword">new</span> Sparticle(<span class="keyword">this</span>.game, <span class="keyword">this</span>.images[index], <span class="keyword">this</span>.x, <span class="keyword">this</span>.y)</span><br><span class="line">            <span class="keyword">this</span>.sparticles.push(sp)</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    update() &#123;</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">var</span> s <span class="keyword">of</span> <span class="keyword">this</span>.sparticles) &#123;</span><br><span class="line">            s.update()</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">this</span>.sparticles = <span class="keyword">this</span>.sparticles.filter(<span class="function"><span class="params">s</span> =&gt;</span> s.life &gt; <span class="number">0</span>)</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    draw() &#123;</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">var</span> s <span class="keyword">of</span> <span class="keyword">this</span>.sparticles) &#123;</span><br><span class="line">            s.draw()</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/blog/tags/前端/" rel="tag"># 前端</a>
+          
+            <a href="/blog/tags/canvas/" rel="tag"># canvas</a>
+          
+            <a href="/blog/tags/游戏/" rel="tag"># 游戏</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/blog/2019/04/29/前端组件化发展（一）：基于原生JS原型链/" rel="next" title="前端组件化发展（一）：基于原生JS原型链">
+                <i class="fa fa-chevron-left"></i> 前端组件化发展（一）：基于原生JS原型链
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/blog/2019/09/04/HTML5-Canvas应用实践（四）：构建画板应用/" rel="prev" title="HTML5-Canvas应用实践（四）：构建画板应用">
+                HTML5-Canvas应用实践（四）：构建画板应用 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+  </div>
+
+
+          </div>
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">木木</p>
+              <div class="site-description motion-element" itemprop="description">记录技术，学习笔记，生活感悟</div>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/blog/archives/">
+                
+                    <span class="site-state-item-count">6</span>
+                    <span class="site-state-item-name">日志</span>
+                  </a>
+                </div>
+              
+
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  
+                    
+                      <a href="/blog/tags/">
+                    
+                  
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">7</span>
+                    <span class="site-state-item-name">标签</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+
+          
+
+          
+            <div class="links-of-author motion-element">
+              
+                <span class="links-of-author-item">
+                  
+                  
+                    
+                  
+                  
+                    
+                  
+                  <a href="https://github.com/timothy-tianmu" title="GitHub &rarr; https://github.com/timothy-tianmu" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+                </span>
+              
+                <span class="links-of-author-item">
+                  
+                  
+                    
+                  
+                  
+                    
+                  
+                  <a href="mailto:tianmu_19970924@163.com" title="E-Mail &rarr; mailto:tianmu_19970924@163.com" rel="noopener" target="_blank"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                </span>
+              
+            </div>
+          
+
+          
+
+          
+          
+
+          
+            
+          
+          
+
+        </div>
+      </div>
+
+      
+      <!--noindex-->
+        <div class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+            
+            
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#HTML5-Canvas应用实践（三）：构建雷霆战机游戏"><span class="nav-number">1.</span> <span class="nav-text">HTML5 Canvas应用实践（三）：构建雷霆战机游戏</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#游戏循环和资源加载"><span class="nav-number">1.1.</span> <span class="nav-text">游戏循环和资源加载</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#游戏精灵"><span class="nav-number">1.2.</span> <span class="nav-text">游戏精灵</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#场景管理"><span class="nav-number">1.3.</span> <span class="nav-text">场景管理</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </div>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+  
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-snowflake-o"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">木木</span>
+
+  
+
+  
+</div>
+
+
+
+
+
+
+
+
+
+        
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+    
+
+    
+  </div>
+
+  
+
+<script>
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+    
+    
+      
+    
+  
+  <script color="0,0,255" opacity="0.5" zindex="-1" count="99" src="//cdn.jsdelivr.net/gh/theme-next/theme-next-canvas-nest@1/canvas-nest.min.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script src="/blog/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script src="/blog/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script src="/blog/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+
+  
+
+
+  <script src="/blog/js/utils.js?v=7.1.0"></script>
+
+  <script src="/blog/js/motion.js?v=7.1.0"></script>
+
+
+
+  
+  
+
+
+  <script src="/blog/js/affix.js?v=7.1.0"></script>
+
+  <script src="/blog/js/schemes/pisces.js?v=7.1.0"></script>
+
+
+
+
+  
+  <script src="/blog/js/scrollspy.js?v=7.1.0"></script>
+<script src="/blog/js/post-details.js?v=7.1.0"></script>
+
+
+
+  
+
+
+  <script src="/blog/js/next-boot.js?v=7.1.0"></script>
+
+
+  
+
+  
+
+  
+
+  
+
+
+  
+
+
+  
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
